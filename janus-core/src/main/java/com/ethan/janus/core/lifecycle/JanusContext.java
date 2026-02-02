@@ -6,6 +6,7 @@ import com.ethan.janus.core.exception.JanusException;
 import lombok.*;
 import org.aspectj.lang.ProceedingJoinPoint;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,6 +22,9 @@ public class JanusContext {
 
     // 生命周期实现
     private JanusLifecycle lifecycle;
+
+    // 插件
+    private List<JanusPlugin> pluginList;
 
     // 比对类型
     @Getter
@@ -55,6 +59,14 @@ public class JanusContext {
         return joinPoint;
     }
 
+    JanusLifecycle getLifecycle() {
+        return this.lifecycle;
+    }
+
+    List<JanusPlugin> getPluginList() {
+        return pluginList;
+    }
+
     void setCompareType(CompareType compareType) {
         this.compareType = compareType;
     }
@@ -78,10 +90,6 @@ public class JanusContext {
 
     void setCompareResMap(Map<String, String> compareResMap) {
         this.compareResMap = compareResMap;
-    }
-
-    JanusLifecycle getLifecycle() {
-        return this.lifecycle;
     }
 
     Object getPluginData(Class<?> clazz) {

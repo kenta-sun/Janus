@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutorService;
 public class JanusAspect {
 
     @Autowired
-    private JanusCoreLifecycle janusCoreLifecycle;
+    private JanusCoreLifecycleProxy lifecycle;
     @Autowired
     private JanusPluginManager janusPluginManager;
     @Autowired
@@ -47,12 +47,12 @@ public class JanusAspect {
 
         /* 插件 */
         List<JanusPlugin> pluginList = this.getPluginList(janus);
-        CoreLifecycleProxy lifecycle = new CoreLifecycleProxy(janusCoreLifecycle, pluginList);
 
         /* 创建上下文对象（循环依赖结构） */
         JanusContext context = JanusContext.builder()
                 .joinPoint(joinPoint)
                 .lifecycle(lifecycle)
+                .pluginList(pluginList)
                 .primaryBranch(primaryBranch)
                 .secondaryBranch(secondaryBranch)
                 .pluginDataMap(new HashMap<>())
