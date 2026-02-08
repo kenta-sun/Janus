@@ -40,4 +40,16 @@ public enum CompareType {
         return CompareType.SYNC_ROLLBACK_ONE_COMPARE.equals(compareType) // 回滚比对分支
                 || CompareType.SYNC_ROLLBACK_ALL_COMPARE.equals(compareType); // 2个分支都回滚
     }
+
+    /**
+     * 是否存在回滚操作
+     *
+     * @param compareType 比对类型
+     * @return true-存在回滚操作 分支；false-不存在
+     */
+    public static boolean hasRollback(CompareType compareType) {
+        // 这写比对类型都涉及回滚
+        return CompareType.SYNC_ROLLBACK_ONE_COMPARE.equals(compareType) // 回滚比对分支
+                || CompareType.SYNC_ROLLBACK_ALL_COMPARE.equals(compareType); // 2个分支都回滚
+    }
 }

@@ -1,7 +1,9 @@
 package com.ethan.janus.core.config;
 
 import com.ethan.janus.core.annotation.Janus;
+import com.ethan.janus.core.constants.CompareType;
 import com.ethan.janus.core.exception.JanusException;
+import com.ethan.janus.core.rollback.JanusRollbackClearCache;
 import com.ethan.janus.core.utils.JanusAopUtils;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +16,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 校验 @Janus 注解中的 methodId 是否重复
+ * 校验 @Janus 注解中的配置是否合法
+ * <p>1. methodId 是否重复
+ * <p>2. 存在事务相关的比对类型(CompareType)，必须实现`JanusRollbackClearCache`
  */
 @Component
-public class JanusMethodIdDuplicateChecker implements SmartInitializingSingleton {
+public class JanusChecker implements SmartInitializingSingleton {
 
     @Autowired
     private ApplicationContext applicationContext;
     @Autowired
     private JanusConfigProperties janusConfigProperties;
+    @Autowired(required = false)
+    private JanusRollbackClearCache janusRollbackClearCache;
 
     @Override
     public void afterSingletonsInstantiated() {
@@ -37,6 +43,7 @@ public class JanusMethodIdDuplicateChecker implements SmartInitializingSingleton
         Set<String> duplicateSet = new HashSet<>();
 
         /* 循环统计重复的 methodId */
+        final boolean[] hasRollback = {false}; // 是否存在事务相关的比对类型
         String[] beanNames = applicationContext.getBeanDefinitionNames();
         for (String beanName : beanNames) {
             // 获取 Bean 的原始类型（处理代理类）
@@ -49,6 +56,7 @@ public class JanusMethodIdDuplicateChecker implements SmartInitializingSingleton
                 Janus annotation = AnnotationUtils.findAnnotation(method, Janus.class);
 
                 if (annotation != null) {
+                    /* methodId 是否重复 */
                     String methodId = annotation.methodId();
                     if (methodIdSet.contains(methodId)) {
                         // 记录重复 methodId
@@ -57,13 +65,42 @@ public class JanusMethodIdDuplicateChecker implements SmartInitializingSingleton
                         // methodId 不重复，保存起来用于后面的校验
                         methodIdSet.add(methodId);
                     }
+
+                    /* 是否存在事务相关的比对类型 */
+                    CompareType compareType = annotation.compareType();
+                    if (!hasRollback[0] && CompareType.hasRollback(compareType)) {
+                        hasRollback[0] = true;
+                    }
                 }
             });
         }
 
-        /* 抛出异常 */
+        /* 判断是否存在不合法的情况 */
+        StringBuilder sb = new StringBuilder();
+
+        if (hasRollback[0] && janusRollbackClearCache == null) {
+            this.initStringBuilder(sb);
+            sb.append("存在事务相关的比对类型，请提供 JanusRollbackClearCache 实现")
+                    .append("\n");
+        }
+
         if (!duplicateSet.isEmpty()) {
-            throw new JanusException("@Janus 注解中的 methodId 重复：" + duplicateSet);
+            this.initStringBuilder(sb);
+            sb.append("@Janus 注解中的 methodId 重复：")
+                    .append(duplicateSet)
+                    .append("\n");
+        }
+
+        /* 抛出异常 */
+        if (sb.length() > 0) {
+            throw new JanusException(sb.toString());
+        }
+    }
+
+    private void initStringBuilder(StringBuilder sb) {
+        if (sb.length() == 0) {
+            sb.append("@Janus 注解配置不合法")
+                    .append("\n");
         }
     }
 }
