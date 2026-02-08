@@ -11,8 +11,13 @@ import java.lang.annotation.*;
 @Documented // 指示该注解应被包含在 JavaDoc 中。 当你使用 javadoc 工具生成 API 文档时，这个注解也会显式地列出来。
 public @interface Janus {
 
+    // 方法唯一标识
+    String methodId();
+
+    // 比对类型
     CompareType compareType() default CompareType.NONE;
 
+    // 插件数组
     Class<? extends JanusPlugin>[] plugins() default {};
 
     /*

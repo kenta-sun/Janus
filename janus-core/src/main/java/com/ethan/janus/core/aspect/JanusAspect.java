@@ -86,6 +86,7 @@ public class JanusAspect {
                 .lifecycle(lifecycleDecoratorManager)
                 .higherPluginList(higherPluginList)
                 .lowerPluginList(lowerPluginList)
+                .methodId(janus.methodId())
                 .isAsyncCompare(janus.isAsyncCompare())
                 .primaryBranch(primaryBranch)
                 .secondaryBranch(secondaryBranch)

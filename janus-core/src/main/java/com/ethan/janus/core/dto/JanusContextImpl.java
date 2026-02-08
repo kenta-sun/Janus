@@ -31,6 +31,9 @@ public class JanusContextImpl implements JanusContext {
     // 优先级大于0的插件
     private List<JanusPlugin> lowerPluginList;
 
+    // 唯一标识
+    private String methodId;
+
     // 比对类型
     @Setter
     private CompareType compareType;

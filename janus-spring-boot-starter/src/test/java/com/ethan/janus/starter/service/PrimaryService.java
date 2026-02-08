@@ -13,7 +13,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class PrimaryService implements TestInterface {
 
-    @Janus(compareType = CompareType.SYNC_COMPARE, plugins = {SwitchJanusPlugin.class, ExecuteTimeJanusPlugin.class})
+    @Janus(
+            methodId = "testMethod",
+            compareType = CompareType.SYNC_COMPARE,
+            plugins = {SwitchJanusPlugin.class, ExecuteTimeJanusPlugin.class}
+    )
     @Override
     public TestResponse testMethod(TestRequest request) {
         if ("1".equals(request.getKey())) {
