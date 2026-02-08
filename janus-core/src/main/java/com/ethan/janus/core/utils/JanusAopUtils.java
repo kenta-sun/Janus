@@ -13,6 +13,16 @@ import java.lang.reflect.Field;
 public class JanusAopUtils {
 
     /**
+     * 获取 Spring AOP 动态代理对象的 target 对象的 Class
+     *
+     * @param proxy Spring AOP 动态代理对象
+     * @return 代理对象的 target 对象的 Class
+     */
+    public static Class<?> getProxyTargetClass(Object proxy) {
+        return AopUtils.getTargetClass(proxy);
+    }
+
+    /**
      * 获取 Spring AOP 动态代理对象的 target 对象
      *
      * @param proxy Spring AOP 动态代理对象

@@ -49,7 +49,7 @@ public class CoreLifecycle implements Lifecycle {
         // 分流
         if (JanusUtils.isBlank(context.getMasterBranchName())) {
             // 使用默认的分流方式
-            context.setMasterBranchName(janusConfigProperties.getMasterBranch());
+            context.setMasterBranchName(janusConfigProperties.getDefaultMasterBranch());
         } else {
             // 校验
             if (!JanusConstants.PRIMARY.equals(context.getMasterBranchName())

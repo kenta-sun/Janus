@@ -17,6 +17,9 @@ import java.util.concurrent.TimeUnit;
 @Data
 public class JanusConfigProperties {
 
+    // 是否校验：@Janus 注解中的 methodId 有无重复。 默认校验，有重复启动时会报错。
+    private Boolean isMethodIdDuplicateCheck = Boolean.TRUE;
+
     // 总开关 Y-开启，N-关闭。不配置，默认开启
     private Boolean isOpen = Boolean.TRUE;
 
@@ -27,16 +30,7 @@ public class JanusConfigProperties {
      *      2.secondary: 代表添加 Secondary 注解的 Service 所在分支
      * 不配置该项时，默认为 secondary，因为一般 secondary 代表老分支，是正确的。
      */
-    private String masterBranch = JanusConstants.SECONDARY;
-
-    /*
-     * 未配置具体的比对开关时，默认是否比对。
-     * 可配置项：
-     *      1.true: 开启比对功能
-     *      2.false: 关闭比对功能
-     * 不配置该项时，默认为 true，表示如果不配置具体的比对开关的情况下，默认开启比对功能。
-     */
-    private Boolean isDefaultCompare = true;
+    private String defaultMasterBranch = JanusConstants.SECONDARY;
 
     /*
      * 默认比对类型，见 CompareType
