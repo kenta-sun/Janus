@@ -7,6 +7,9 @@ import com.ethan.janus.core.exception.JanusException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+/**
+ * 需要携带数据的插件
+ */
 public class AbstractDataJanusPlugin<T> implements JanusPlugin {
 
     // 当前插件实现类的 class

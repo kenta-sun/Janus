@@ -5,7 +5,6 @@ import com.ethan.janus.core.constants.CompareType;
 import com.ethan.janus.starter.dto.TestRequest;
 import com.ethan.janus.starter.dto.TestResponse;
 import com.ethan.janus.starter.plugins.ExecuteTimeJanusPlugin;
-import com.ethan.janus.starter.plugins.SwitchJanusPlugin;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +15,7 @@ public class PrimaryService implements TestInterface {
     @Janus(
             methodId = "testMethod",
             compareType = CompareType.SYNC_COMPARE,
-            plugins = {SwitchJanusPlugin.class, ExecuteTimeJanusPlugin.class}
+            plugins = {ExecuteTimeJanusPlugin.class}
     )
     @Override
     public TestResponse testMethod(TestRequest request) {

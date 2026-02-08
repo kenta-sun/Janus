@@ -196,9 +196,12 @@ public class JanusAspect {
      * 获取插件
      */
     private List<JanusPlugin> getPluginList(Janus janus) {
-        // 查询插件 class 类型
-        Class<? extends JanusPlugin>[] pluginClassArr = janus.plugins();
-        // 查询插件单例对象
-        return janusPluginManager.getJanusPluginList(pluginClassArr);
+        // 查询法级别的插件
+        List<JanusPlugin> methodPluginList = janusPluginManager.getMethodPluginList(janus.plugins());
+        // 查询全局插件
+        List<JanusPlugin> globalPluginList = janusPluginManager.getAllGlobalPluginList();
+        // 合并
+        methodPluginList.addAll(globalPluginList);
+        return methodPluginList;
     }
 }
