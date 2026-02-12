@@ -123,7 +123,7 @@ public class JanusAspect {
         if (context.getMasterBranch().getException() != null) {
             throw context.getMasterBranch().getException();
         } else {
-            return context.getMasterBranch().getRes();
+            return context.getMasterBranch().getBranchRes().getRes();
         }
     }
 

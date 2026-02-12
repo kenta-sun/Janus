@@ -16,14 +16,18 @@ public class HigherPluginsExecuteLifecycle extends LifecycleDecorator {
 
     @Override
     public void switchBranch(JanusContextImpl context) {
-        context.getHigherPluginList().forEach(plugin -> plugin.switchBranch(context));
+        for (JanusPlugin plugin : context.getHigherPluginList()) {
+            plugin.switchBranch(context);
+        }
         decoratedLifecycle.switchBranch(context);
     }
 
     @Override
     public void primaryExecute(JanusContextImpl context) {
         List<JanusPlugin> pluginList = context.getHigherPluginList();
-        pluginList.forEach(plugin -> plugin.beforePrimaryExecute(context));
+        for (JanusPlugin plugin : pluginList) {
+            plugin.beforePrimaryExecute(context);
+        }
         decoratedLifecycle.primaryExecute(context);
         // 倒序执行所有插件的 after 方法
         for (int i = pluginList.size() - 1; i >= 0; i--) {
@@ -34,7 +38,9 @@ public class HigherPluginsExecuteLifecycle extends LifecycleDecorator {
     @Override
     public void secondaryExecute(JanusContextImpl context) {
         List<JanusPlugin> pluginList = context.getHigherPluginList();
-        pluginList.forEach(plugin -> plugin.beforeSecondaryExecute(context));
+        for (JanusPlugin plugin : pluginList) {
+            plugin.beforeSecondaryExecute(context);
+        }
         decoratedLifecycle.secondaryExecute(context);
         // 倒序执行所有插件的 after 方法
         for (int i = pluginList.size() - 1; i >= 0; i--) {
@@ -45,7 +51,9 @@ public class HigherPluginsExecuteLifecycle extends LifecycleDecorator {
     @Override
     public void compare(JanusContextImpl context) {
         List<JanusPlugin> pluginList = context.getHigherPluginList();
-        pluginList.forEach(plugin -> plugin.beforeCompare(context));
+        for (JanusPlugin plugin : pluginList) {
+            plugin.beforeCompare(context);
+        }
         decoratedLifecycle.compare(context);
         // 倒序执行所有插件的 after 方法
         for (int i = pluginList.size() - 1; i >= 0; i--) {

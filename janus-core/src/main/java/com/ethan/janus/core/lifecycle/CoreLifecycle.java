@@ -4,10 +4,7 @@ import com.ethan.janus.core.annotation.Secondary;
 import com.ethan.janus.core.config.JanusConfigProperties;
 import com.ethan.janus.core.constants.CompareType;
 import com.ethan.janus.core.constants.JanusConstants;
-import com.ethan.janus.core.dto.BranchInfoImpl;
-import com.ethan.janus.core.dto.JanusContext;
-import com.ethan.janus.core.dto.JanusContextImpl;
-import com.ethan.janus.core.dto.SecondaryMethodInfo;
+import com.ethan.janus.core.dto.*;
 import com.ethan.janus.core.exception.JanusException;
 import com.ethan.janus.core.utils.JanusUtils;
 import com.ethan.janus.core.utils.JsonUtils;
@@ -88,7 +85,11 @@ public class CoreLifecycle implements Lifecycle {
             } else { // 同步执行，直接 proceed
                 res = joinPoint.proceed();
             }
-            branch.setRes(res);
+            branch.setBranchRes(
+                    BranchRes.builder()
+                            .res(res)
+                            .build()
+            );
         } catch (Throwable e) {
             // 保存异常对象
             branch.setException(e);
@@ -113,7 +114,11 @@ public class CoreLifecycle implements Lifecycle {
         try {
             // 执行分支方法
             Object res = this.invokeSecondaryMethod(joinPoint);
-            branch.setRes(res);
+            branch.setBranchRes(
+                    BranchRes.builder()
+                            .res(res)
+                            .build()
+            );
         } catch (Throwable e) {
             // 保存异常对象
             branch.setException(e);
@@ -130,7 +135,7 @@ public class CoreLifecycle implements Lifecycle {
         try {
             BranchInfoImpl primaryBranch = context.getPrimaryBranch();
             BranchInfoImpl secondaryBranch = context.getSecondaryBranch();
-            Map<String, String> compareResMap = JsonUtils.compareObj(primaryBranch.getRes(), secondaryBranch.getRes());
+            Map<String, String> compareResMap = JsonUtils.compareObj(primaryBranch.getBranchRes(), secondaryBranch.getBranchRes());
             context.setCompareResMap(compareResMap);
         } catch (Throwable e) {
             e.printStackTrace();

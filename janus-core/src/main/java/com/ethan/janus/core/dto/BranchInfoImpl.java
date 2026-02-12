@@ -17,9 +17,9 @@ public class BranchInfoImpl implements BranchInfo {
     // 是否已经执行过: true-执行过; false 或者 null，都表示未执行过
     @Setter
     private Boolean isExecuted;
-    // 计算结果对象
+    // 分支运行结果对象
     @Setter
-    private Object res;
+    private BranchRes branchRes;
     // 异常对象
     @Setter
     private Throwable exception;
