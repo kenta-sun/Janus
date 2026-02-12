@@ -1,4 +1,4 @@
-package com.ethan.janus.core.config;
+package com.ethan.janus.core.manager;
 
 import com.ethan.janus.core.annotation.Global;
 import com.ethan.janus.core.exception.JanusException;
@@ -33,7 +33,7 @@ public class JanusPluginManager implements ApplicationRunner {
             for (JanusPlugin plugin : beanMap.values()) {
                 // 防止有动态代理类导致无法获取正确的class，先获取原始的bean对象
                 JanusPlugin target = (JanusPlugin) JanusAopUtils.getProxyTarget(plugin);
-                // 插件类型
+                // bean 类型
                 Class<? extends JanusPlugin> clazz = target.getClass();
                 // 同一个插件有多个对象，会报错
                 JanusPlugin pluginFromMap = this.methodPluginMap.get(clazz);
@@ -72,7 +72,7 @@ public class JanusPluginManager implements ApplicationRunner {
             if (janusPlugin == null) {
                 janusPlugin = this.globalPluginMap.get(aClass);
                 if (janusPlugin == null) {
-                    // 插件未找到
+                    // bean 未找到
                     throw new JanusException("No plugin of type [" + aClass.getName() + "] found");
                 } else {
                     // 该插件为全局插件，不能放入list中，需要警告用户

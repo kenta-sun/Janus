@@ -1,5 +1,6 @@
 package com.ethan.janus.core.dto;
 
+import com.ethan.janus.core.compare.JanusCompare;
 import com.ethan.janus.core.constants.CompareType;
 import com.ethan.janus.core.exception.JanusException;
 import com.ethan.janus.core.plugin.JanusPlugin;
@@ -31,6 +32,9 @@ public class JanusContextImpl implements JanusContext {
     // 优先级大于0的插件
     private List<JanusPlugin> lowerPluginList;
 
+    // 比对功能实现
+    private JanusCompare janusCompare;
+
     // 唯一标识
     private String methodId;
 
@@ -60,7 +64,7 @@ public class JanusContextImpl implements JanusContext {
 
     // 比对结果
     @Setter
-    private Map<String, String> compareResMap;
+    private CompareRes compareRes;
 
     // 自定义数据
     private Map<Class<?>, Object> pluginDataMap;

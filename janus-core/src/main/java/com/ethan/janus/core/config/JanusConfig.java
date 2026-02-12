@@ -1,5 +1,7 @@
 package com.ethan.janus.core.config;
 
+import com.ethan.janus.core.compare.JanusCompareDefaultImpl;
+import com.ethan.janus.core.compare.JanusCompare;
 import com.ethan.janus.core.rollback.JanusRollback;
 import com.ethan.janus.core.rollback.JanusRollbackComponent;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -13,5 +15,10 @@ public class JanusConfig {
     @ConditionalOnMissingBean(value = JanusRollback.class)
     public JanusRollback janusRollback() {
         return new JanusRollbackComponent();
+    }
+
+    @Bean
+    public JanusCompare defaultJanusCompare() {
+        return new JanusCompareDefaultImpl();
     }
 }

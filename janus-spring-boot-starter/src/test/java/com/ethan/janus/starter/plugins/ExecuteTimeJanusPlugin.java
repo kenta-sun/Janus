@@ -55,7 +55,7 @@ public class ExecuteTimeJanusPlugin extends AbstractDataJanusPlugin<ExecuteTimeJ
     @Override
     public void afterCompare(JanusContext context) {
         JanusTests.methodId = context.getMethodId();
-        JanusTests.compareResMap = context.getCompareResMap();
+        JanusTests.compareRes = context.getCompareRes();
         JanusTests.businessKey = context.getBusinessKey();
     }
 

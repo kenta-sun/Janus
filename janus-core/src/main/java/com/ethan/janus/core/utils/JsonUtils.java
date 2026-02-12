@@ -22,9 +22,9 @@ public class JsonUtils {
     private static final ObjectMapper ob;
     private static final SimpleDateFormat sdf;
 
-    private static final String NULL = "null";
-    private static final String NOT_NULL = "notNull";
-    private static final String SEPARATOR = " / ";
+    public static final String NULL = "null";
+    public static final String NOT_NULL = "notNull";
+    public static final String SEPARATOR = " / ";
 
     static {
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

@@ -1,5 +1,7 @@
 package com.ethan.janus.core.annotation;
 
+import com.ethan.janus.core.compare.JanusCompareDefaultImpl;
+import com.ethan.janus.core.compare.JanusCompare;
 import com.ethan.janus.core.constants.CompareType;
 import com.ethan.janus.core.plugin.JanusPlugin;
 
@@ -28,6 +30,9 @@ public @interface Janus {
      * 不配置该项时，默认为 true，表示异步执行比对功能。
      */
     boolean isAsyncCompare() default true;
+
+    // 比对功能实现类
+    Class<? extends JanusCompare> compareImpl() default JanusCompareDefaultImpl.class;
 
     // 插件数组
     Class<? extends JanusPlugin>[] plugins() default {};

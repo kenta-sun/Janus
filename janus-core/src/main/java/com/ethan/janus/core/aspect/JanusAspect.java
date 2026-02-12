@@ -1,10 +1,12 @@
 package com.ethan.janus.core.aspect;
 
 import com.ethan.janus.core.annotation.Janus;
+import com.ethan.janus.core.compare.JanusCompare;
 import com.ethan.janus.core.config.ExpressionRootObject;
 import com.ethan.janus.core.config.JanusConfigProperties;
 import com.ethan.janus.core.config.JanusExpressionEvaluator;
-import com.ethan.janus.core.config.JanusPluginManager;
+import com.ethan.janus.core.manager.JanusCompareManager;
+import com.ethan.janus.core.manager.JanusPluginManager;
 import com.ethan.janus.core.constants.CompareType;
 import com.ethan.janus.core.constants.JanusConstants;
 import com.ethan.janus.core.dto.BranchInfoImpl;
@@ -44,6 +46,8 @@ public class JanusAspect {
     @Autowired
     private JanusPluginManager janusPluginManager;
     @Autowired
+    private JanusCompareManager janusCompareManager;
+    @Autowired
     private ExecutorService janusBranchThreadPool;
     @Autowired
     private ExecutorService janusCompareThreadPool;
@@ -79,6 +83,9 @@ public class JanusAspect {
         // 低优先级插件，order 大于0
         List<JanusPlugin> lowerPluginList = pluginListDTO.getLowerPluginList();
 
+        /* 比对功能具体实现 */
+        JanusCompare janusCompare = janusCompareManager.getJanusCompare(janus.compareImpl());
+
         /* 业务数据键 */
         String businessKey = this.getBusinessKey(janus, joinPoint);
 
@@ -88,6 +95,7 @@ public class JanusAspect {
                 .lifecycle(lifecycleDecoratorManager)
                 .higherPluginList(higherPluginList)
                 .lowerPluginList(lowerPluginList)
+                .janusCompare(janusCompare)
                 .methodId(janus.methodId())
                 .businessKey(businessKey)
                 .isAsyncCompare(janus.isAsyncCompare())

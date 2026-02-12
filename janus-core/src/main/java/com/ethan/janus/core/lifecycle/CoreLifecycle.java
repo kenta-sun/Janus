@@ -1,13 +1,13 @@
 package com.ethan.janus.core.lifecycle;
 
 import com.ethan.janus.core.annotation.Secondary;
+import com.ethan.janus.core.compare.JanusCompare;
 import com.ethan.janus.core.config.JanusConfigProperties;
 import com.ethan.janus.core.constants.CompareType;
 import com.ethan.janus.core.constants.JanusConstants;
 import com.ethan.janus.core.dto.*;
 import com.ethan.janus.core.exception.JanusException;
 import com.ethan.janus.core.utils.JanusUtils;
-import com.ethan.janus.core.utils.JsonUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint;
@@ -133,10 +133,9 @@ public class CoreLifecycle implements Lifecycle {
     @Override
     public void compare(JanusContextImpl context) {
         try {
-            BranchInfoImpl primaryBranch = context.getPrimaryBranch();
-            BranchInfoImpl secondaryBranch = context.getSecondaryBranch();
-            Map<String, String> compareResMap = JsonUtils.compareObj(primaryBranch.getBranchRes(), secondaryBranch.getBranchRes());
-            context.setCompareResMap(compareResMap);
+            JanusCompare janusCompare = context.getJanusCompare();
+            CompareRes compareRes = janusCompare.compare(context.getPrimaryBranch(), context.getSecondaryBranch());
+            context.setCompareRes(compareRes);
         } catch (Throwable e) {
             e.printStackTrace();
             // TODO 日志框架

@@ -13,4 +13,8 @@ public interface BranchInfo {
     Boolean getIsRollback();
 
     Boolean getIsAsync();
+
+    boolean isSuccess();
+
+    boolean isError();
 }

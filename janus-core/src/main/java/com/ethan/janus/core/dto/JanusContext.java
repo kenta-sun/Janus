@@ -2,8 +2,6 @@ package com.ethan.janus.core.dto;
 
 import com.ethan.janus.core.constants.CompareType;
 
-import java.util.Map;
-
 public interface JanusContext {
 
     String getMethodId();
@@ -15,7 +13,7 @@ public interface JanusContext {
     BranchInfo getSecondaryBranch();
     BranchInfo getMasterBranch();
     BranchInfo getCompareBranch();
-    Map<String, String> getCompareResMap();
+    CompareRes getCompareRes();
 
     void setMasterBranchName(String masterBranchName);
 }

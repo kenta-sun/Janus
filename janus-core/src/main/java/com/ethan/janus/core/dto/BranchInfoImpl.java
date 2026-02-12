@@ -33,4 +33,20 @@ public class BranchInfoImpl implements BranchInfo {
     // 是否是异步执行
     @Setter
     private Boolean isAsync;
+
+    /**
+     * 是否成功
+     * @return true-成功；false-不成功
+     */
+    public boolean isSuccess() {
+        return exception == null;
+    }
+
+    /**
+     * 是否报错
+     * @return true-报错；false-没报错，成功返回结果
+     */
+    public boolean isError() {
+        return exception != null;
+    }
 }

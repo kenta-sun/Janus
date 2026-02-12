@@ -1,17 +1,17 @@
 package com.ethan.janus.starter;
 
+import com.ethan.janus.core.constants.JanusConstants;
+import com.ethan.janus.core.dto.CompareRes;
+import com.ethan.janus.core.utils.JsonUtils;
 import com.ethan.janus.starter.dto.TestRequest;
 import com.ethan.janus.starter.dto.TestResponse;
 import com.ethan.janus.starter.service.TestInterface;
-import com.ethan.janus.core.utils.JsonUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-
-import java.util.Map;
 
 /**
  * Starter 基础加载测试。
@@ -31,7 +31,7 @@ public class JanusTests {
     public static String methodId = null;
     public static Long primaryTime = null;
     public static Long secondaryTime = null;
-    public static Map<String, String> compareResMap = null;
+    public static volatile CompareRes compareRes = null;
     public static String businessKey = null;
 
     @TestConfiguration
@@ -53,7 +53,8 @@ public class JanusTests {
         Assertions.assertEquals(1, response1.getNumber());
         Assertions.assertTrue(primaryTime > 0);
         Assertions.assertTrue(secondaryTime > 0);
-        Assertions.assertEquals("{}", JsonUtils.writeValueAsString(compareResMap));
+        Assertions.assertEquals(JanusConstants.SUCCESS, compareRes.getCompareStatus());
+        Assertions.assertNull(compareRes.getDiffFieldMap());
         Assertions.assertEquals("1_qqq", businessKey);
 
         TestResponse response2 = testInterface.testMethod(new TestRequest("2"));
@@ -66,7 +67,8 @@ public class JanusTests {
         Assertions.assertEquals(2, response2.getNumber());
         Assertions.assertTrue(primaryTime > 0);
         Assertions.assertTrue(secondaryTime > 0);
-        Assertions.assertEquals("{\"number\":\"2 / 3\"}", JsonUtils.writeValueAsString(compareResMap));
+        Assertions.assertEquals(JanusConstants.DIFFERENT, compareRes.getCompareStatus());
+        Assertions.assertEquals("{\"res.number\":\"2 / 3\"}", JsonUtils.writeValueAsString(compareRes.getDiffFieldMap()));
         Assertions.assertEquals("2_qqq", businessKey);
     }
 }
