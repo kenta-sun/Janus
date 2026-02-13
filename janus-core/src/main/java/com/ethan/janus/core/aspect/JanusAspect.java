@@ -117,6 +117,18 @@ public class JanusAspect {
         /* 分流 */
         context.getLifecycle().switchBranch(context);
 
+        /* CompareType 为 ROLLBACK 的场景下，先执行比对分支代码 */
+        try {
+            if (CompareType.hasRollback(compareType)) {
+                /* 执行比对分支代码 */
+                this.executedCompareBranch(context);
+            }
+        } catch (Throwable e) {
+            // 比对流程报错不影响主分支
+            // TODO 日志框架
+            e.printStackTrace();
+        }
+
         /* 执行主分支代码 */
         this.executedMasterBranch(context);
 
@@ -187,33 +199,17 @@ public class JanusAspect {
     }
 
     /**
-     * 执行主分支代码
+     * 执行主分支
      */
     private void executedMasterBranch(JanusContextImpl context) {
-        if (JanusConstants.PRIMARY.equals(context.getMasterBranchName())) {
-            // 执行切点方法
-            context.getLifecycle().primaryExecute(context);
-        } else if (JanusConstants.SECONDARY.equals(context.getMasterBranchName())) {
-            // 执行次要分支
-            context.getLifecycle().secondaryExecute(context);
-        } else {
-            throw new JanusException("不支持的 MasterBranch 类型: [" + context.getMasterBranchName() + "]");
-        }
+        context.executedMasterBranch();
     }
 
     /**
-     * 执行比对分支代码
+     * 执行比对分支
      */
     private void executedCompareBranch(JanusContextImpl context) {
-        if (JanusConstants.PRIMARY.equals(context.getMasterBranchName())) {
-            // 由于主分支是 primary，所以这里执行 secondary 分支
-            context.getLifecycle().secondaryExecute(context);
-        } else if (JanusConstants.SECONDARY.equals(context.getMasterBranchName())) {
-            // 由于主分支是 secondary，所以这里执行 primary 分支
-            context.getLifecycle().primaryExecute(context);
-        } else {
-            throw new JanusException("不支持的 MasterBranch 类型: [" + context.getMasterBranchName() + "]");
-        }
+        context.executedCompareBranch();
     }
 
     /**

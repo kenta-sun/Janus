@@ -128,4 +128,37 @@ public class JanusContextImpl implements JanusContext {
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         return JanusUtils.getAnnotation(joinPoint, annotationClass);
     }
+
+    /**
+     * 执行主分支
+     */
+    public void executedMasterBranch() {
+        this.executeBranch(this.masterBranch);
+    }
+
+    /**
+     * 执行比对分支
+     */
+    public void executedCompareBranch() {
+        this.executeBranch(this.compareBranch);
+    }
+
+    /**
+     * 执行某个分支
+     *
+     * @param branch 分支对象
+     */
+    private void executeBranch(BranchInfoImpl branch) {
+        if (branch.getIsExecuted()) {
+            // 该分支执行过，不再执行
+            return;
+        }
+        if (branch == this.primaryBranch) {
+            // 该分支是 primary 分支
+            lifecycle.primaryExecute(this);
+        } else {
+            // 该分支是 secondary 分支
+            lifecycle.secondaryExecute(this);
+        }
+    }
 }
