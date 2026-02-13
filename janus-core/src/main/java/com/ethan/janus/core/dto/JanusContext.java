@@ -2,6 +2,8 @@ package com.ethan.janus.core.dto;
 
 import com.ethan.janus.core.constants.CompareType;
 
+import java.lang.annotation.Annotation;
+
 public interface JanusContext {
 
     String getMethodId();
@@ -16,4 +18,6 @@ public interface JanusContext {
     CompareRes getCompareRes();
 
     void setMasterBranchName(String masterBranchName);
+
+    <T extends Annotation> T getAnnotation(Class<T> annotationClass);
 }

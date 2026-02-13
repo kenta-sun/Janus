@@ -57,6 +57,10 @@ public class ExecuteTimeJanusPlugin extends AbstractDataJanusPlugin<ExecuteTimeJ
         JanusTests.methodId = context.getMethodId();
         JanusTests.compareRes = context.getCompareRes();
         JanusTests.businessKey = context.getBusinessKey();
+        TestAnnotationJanusPlugin.TestAnnotationJanusPluginData testAnnotationJanusPluginData = this.getOtherPluginData(context, TestAnnotationJanusPlugin.class);
+        if (testAnnotationJanusPluginData != null) {
+            JanusTests.TestAnnotationKey = testAnnotationJanusPluginData.getValue();
+        }
     }
 
     public static class ExecuteTimeJanusPluginData {

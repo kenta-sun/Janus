@@ -2,9 +2,11 @@ package com.ethan.janus.starter.service;
 
 import com.ethan.janus.core.annotation.Janus;
 import com.ethan.janus.core.constants.CompareType;
+import com.ethan.janus.starter.annotation.TestAnnotation;
 import com.ethan.janus.starter.dto.TestRequest;
 import com.ethan.janus.starter.dto.TestResponse;
 import com.ethan.janus.starter.plugins.ExecuteTimeJanusPlugin;
+import com.ethan.janus.starter.plugins.TestAnnotationJanusPlugin;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +18,9 @@ public class PrimaryService implements TestInterface {
             methodId = "testMethod",
             compareType = CompareType.SYNC_COMPARE,
             businessKey = "buildKey(#request.key, 'qqq')",
-            plugins = {ExecuteTimeJanusPlugin.class}
+            plugins = {TestAnnotationJanusPlugin.class, ExecuteTimeJanusPlugin.class}
     )
+    @TestAnnotation(value = "Archimonde")
     @Override
     public TestResponse testMethod(TestRequest request) {
         if ("1".equals(request.getKey())) {

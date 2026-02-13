@@ -33,6 +33,7 @@ public class JanusTests {
     public static Long secondaryTime = null;
     public static volatile CompareRes compareRes = null;
     public static String businessKey = null;
+    public static String TestAnnotationKey = null;
 
     @TestConfiguration
     @EnableAspectJAutoProxy(proxyTargetClass = true)
@@ -56,6 +57,7 @@ public class JanusTests {
         Assertions.assertEquals(JanusConstants.SUCCESS, compareRes.getCompareStatus());
         Assertions.assertNull(compareRes.getDiffFieldMap());
         Assertions.assertEquals("1_qqq", businessKey);
+        Assertions.assertEquals("Archimonde", TestAnnotationKey);
 
         TestResponse response2 = testInterface.testMethod(new TestRequest("2"));
         try {
@@ -70,5 +72,6 @@ public class JanusTests {
         Assertions.assertEquals(JanusConstants.DIFFERENT, compareRes.getCompareStatus());
         Assertions.assertEquals("{\"res.number\":\"2 / 3\"}", JsonUtils.writeValueAsString(compareRes.getDiffFieldMap()));
         Assertions.assertEquals("2_qqq", businessKey);
+        Assertions.assertEquals("Archimonde", TestAnnotationKey);
     }
 }

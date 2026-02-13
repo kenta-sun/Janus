@@ -6,7 +6,7 @@ public interface BranchInfo {
 
     String getBranchType();
 
-    Object getBranchRes();
+    BranchRes getBranchRes();
 
     Throwable getException();
 

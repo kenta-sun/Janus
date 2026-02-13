@@ -3,11 +3,13 @@ package com.ethan.janus.core.dto;
 import com.ethan.janus.core.compare.JanusCompare;
 import com.ethan.janus.core.constants.CompareType;
 import com.ethan.janus.core.exception.JanusException;
-import com.ethan.janus.core.plugin.JanusPlugin;
 import com.ethan.janus.core.lifecycle.Lifecycle;
+import com.ethan.janus.core.plugin.JanusPlugin;
+import com.ethan.janus.core.utils.JanusUtils;
 import lombok.*;
 import org.aspectj.lang.ProceedingJoinPoint;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
 
@@ -84,5 +86,16 @@ public class JanusContextImpl implements JanusContext {
 
     public void putPluginData(Class<?> clazz, Object data) {
         this.pluginDataMap.put(clazz, data);
+    }
+
+    /**
+     * 获取切点方法上面的指定注解
+     *
+     * @param annotationClass 注解类
+     * @return 注解对象
+     * @param <T> 注解类型泛型
+     */
+    public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+        return JanusUtils.getAnnotation(joinPoint, annotationClass);
     }
 }
