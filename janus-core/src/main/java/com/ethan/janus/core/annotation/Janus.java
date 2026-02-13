@@ -23,11 +23,11 @@ public @interface Janus {
     String businessKey() default "";
 
     /*
-     * 比对功能是否异步执行。
+     * 比对分支运行完后，比对2个分支的结果的过程是否异步执行。
      * 可配置项：
      *      1.true: 异步执行比对功能
      *      2.false: 主线程同步执行比对功能
-     * 不配置该项时，默认为 true，表示异步执行比对功能。
+     * 不配置该项时，默认为 true，表示异步执行比对过程。
      */
     boolean isAsyncCompare() default true;
 

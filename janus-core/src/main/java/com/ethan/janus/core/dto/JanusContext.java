@@ -9,7 +9,10 @@ public interface JanusContext {
     String getMethodId();
     String getBusinessKey();
     CompareType getCompareType();
-    Boolean getIsAsyncCompare();
+    Boolean isCompare();
+    Boolean isNotCompare();
+    void setIsCompare(Boolean isCompare);
+    Boolean isAsyncCompare();
     String getMasterBranchName();
     BranchInfo getPrimaryBranch();
     BranchInfo getSecondaryBranch();

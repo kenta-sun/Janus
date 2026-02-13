@@ -89,6 +89,14 @@ public class JanusAspect {
         /* 业务数据键 */
         String businessKey = this.getBusinessKey(janus, joinPoint);
 
+        /* 设置比对类型 */
+        CompareType compareType;
+        if (this.isCompareTypeNull(janus.compareType())) {
+            compareType = CompareType.valueOf(janusConfigProperties.getDefaultCompareType());
+        } else {
+            compareType = janus.compareType();
+        }
+
         /* 创建上下文对象 */
         JanusContextImpl context = JanusContextImpl.builder()
                 .joinPoint(joinPoint)
@@ -98,18 +106,13 @@ public class JanusAspect {
                 .janusCompare(janusCompare)
                 .methodId(janus.methodId())
                 .businessKey(businessKey)
+                .compareType(compareType)
+                .isCompare(!(compareType == CompareType.DO_NOT_COMPARE))
                 .isAsyncCompare(janus.isAsyncCompare())
                 .primaryBranch(primaryBranch)
                 .secondaryBranch(secondaryBranch)
                 .pluginDataMap(new ConcurrentHashMap<>())
                 .build();
-
-        /* 设置比对类型 */
-        if (this.isCompareTypeNull(janus.compareType())) {
-            context.setCompareType(CompareType.valueOf(janusConfigProperties.getDefaultCompareType()));
-        } else {
-            context.setCompareType(janus.compareType());
-        }
 
         /* 分流 */
         context.getLifecycle().switchBranch(context);
@@ -143,6 +146,10 @@ public class JanusAspect {
      * 处理比对流程，需要判断是否比对，如何比对等问题，以及
      */
     private void handleCompare(JanusContextImpl context) {
+        if (context.isNotCompare()) {
+            // 不比对，直接返回
+            return;
+        }
         switch (context.getCompareType()) {
             // 异步比对
             case ASYNC_COMPARE:
@@ -171,7 +178,7 @@ public class JanusAspect {
         this.executedCompareBranch(context);
 
         /* 比对 */
-        if (context.getIsAsyncCompare()) {
+        if (context.isAsyncCompare()) {
             janusCompareThreadPool.execute(() -> context.getLifecycle().compare(context));
         } else {
             // 同步比对
