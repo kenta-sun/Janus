@@ -5,7 +5,7 @@ import com.ethan.janus.core.constants.JanusConstants;
 import com.ethan.janus.core.dto.BranchInfo;
 import com.ethan.janus.core.dto.CompareRes;
 import com.ethan.janus.core.utils.JanusUtils;
-import com.ethan.janus.core.utils.JsonUtils;
+import com.ethan.janus.core.utils.JanusJsonUtils;
 
 import java.util.Map;
 
@@ -28,7 +28,7 @@ public class JanusCompareDefaultImpl implements JanusCompare {
             }
         } else {
             // 无异常，比对具体的数据
-            Map<String, String> diffFieldMap = JsonUtils.compareObj(primaryBranch.getBranchRes(), secondaryBranch.getBranchRes());
+            Map<String, String> diffFieldMap = JanusJsonUtils.compareObj(primaryBranch.getBranchRes(), secondaryBranch.getBranchRes());
             if (JanusUtils.isEmpty(diffFieldMap)) {
                 // diffFieldMap 为空代表比对通过，没有差异
                 compareRes.setCompareStatus(JanusConstants.SUCCESS);

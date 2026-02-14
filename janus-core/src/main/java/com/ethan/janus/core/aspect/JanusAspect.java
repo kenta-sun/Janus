@@ -5,8 +5,6 @@ import com.ethan.janus.core.compare.JanusCompare;
 import com.ethan.janus.core.config.ExpressionRootObject;
 import com.ethan.janus.core.config.JanusConfigProperties;
 import com.ethan.janus.core.config.JanusExpressionEvaluator;
-import com.ethan.janus.core.manager.JanusCompareManager;
-import com.ethan.janus.core.manager.JanusPluginManager;
 import com.ethan.janus.core.constants.CompareType;
 import com.ethan.janus.core.constants.JanusConstants;
 import com.ethan.janus.core.dto.BranchInfoImpl;
@@ -14,7 +12,10 @@ import com.ethan.janus.core.dto.JanusContextImpl;
 import com.ethan.janus.core.dto.PluginListDTO;
 import com.ethan.janus.core.exception.JanusException;
 import com.ethan.janus.core.lifecycle.LifecycleDecoratorManager;
+import com.ethan.janus.core.manager.JanusCompareManager;
+import com.ethan.janus.core.manager.JanusPluginManager;
 import com.ethan.janus.core.plugin.JanusPlugin;
+import com.ethan.janus.core.utils.JanusLogUtils;
 import com.ethan.janus.core.utils.JanusUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -116,6 +117,17 @@ public class JanusAspect {
                 .pluginDataMap(new ConcurrentHashMap<>())
                 .build();
 
+        if (log.isInfoEnabled()) {
+            log.info(
+                    "[Janus] {} [methodId:{}] [businessKey:{}] [lifecycle:{}] >> compareType={}",
+                    JanusLogUtils.SUCCESS_ICON,
+                    context.getMethodId(),
+                    context.getBusinessKey(),
+                    "Janus begin",
+                    compareType.name()
+            );
+        }
+
         /* 分流 */
         context.getLifecycle().switchBranch(context);
 
@@ -123,15 +135,22 @@ public class JanusAspect {
         try {
             if (CompareType.hasRollback(compareType)) {
                 /* 执行比对分支代码 */
-                this.executedCompareBranch(context);
+                this.compareBranchExecute(context);
             }
         } catch (Throwable e) {
             // 比对流程报错不影响主分支
-            log.error("比对分支运行时出现异常", e);
+            log.error(
+                    "[Janus] {} [methodId:{}] [businessKey:{}] [lifecycle:{}] >> exception=",
+                    JanusLogUtils.FAIL_ICON,
+                    context.getMethodId(),
+                    context.getBusinessKey(),
+                    "compareBranchExecute",
+                    e
+            );
         }
 
         /* 执行主分支代码 */
-        this.executedMasterBranch(context);
+        this.masterBranchExecute(context);
 
         /* 比对 */
         // 处理比对流程
@@ -139,7 +158,14 @@ public class JanusAspect {
             this.handleCompare(context);
         } catch (Throwable e) {
             // 比对流程报错不影响主分支
-            log.error("比对过程中出现异常", e);
+            log.error(
+                    "[Janus] {} [methodId:{}] [businessKey:{}] [lifecycle:{}] >> exception=",
+                    JanusLogUtils.FAIL_ICON,
+                    context.getMethodId(),
+                    context.getBusinessKey(),
+                    "handleCompare",
+                    e
+            );
         }
 
         /* 返回结果 */
@@ -187,7 +213,7 @@ public class JanusAspect {
      */
     private void compareTwoBranch(JanusContextImpl context) {
         /* 执行比对分支代码 */
-        this.executedCompareBranch(context);
+        this.compareBranchExecute(context);
 
         /* 比对 */
         if (context.isAsyncCompare()) {
@@ -201,15 +227,15 @@ public class JanusAspect {
     /**
      * 执行主分支
      */
-    private void executedMasterBranch(JanusContextImpl context) {
-        context.executedMasterBranch();
+    private void masterBranchExecute(JanusContextImpl context) {
+        context.masterBranchExecute();
     }
 
     /**
      * 执行比对分支
      */
-    private void executedCompareBranch(JanusContextImpl context) {
-        context.executedCompareBranch();
+    private void compareBranchExecute(JanusContextImpl context) {
+        context.compareBranchExecute();
     }
 
     /**

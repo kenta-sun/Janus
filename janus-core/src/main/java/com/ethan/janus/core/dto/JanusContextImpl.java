@@ -132,14 +132,14 @@ public class JanusContextImpl implements JanusContext {
     /**
      * 执行主分支
      */
-    public void executedMasterBranch() {
+    public void masterBranchExecute() {
         this.executeBranch(this.masterBranch);
     }
 
     /**
      * 执行比对分支
      */
-    public void executedCompareBranch() {
+    public void compareBranchExecute() {
         this.executeBranch(this.compareBranch);
     }
 

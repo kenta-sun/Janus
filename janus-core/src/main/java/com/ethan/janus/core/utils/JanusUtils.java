@@ -50,6 +50,16 @@ public class JanusUtils {
     }
 
     /**
+     * 获取切点方法
+     */
+    public static Method getMethodFromJoinPoint(ProceedingJoinPoint joinPoint) {
+        // 获取方法签名
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        // 获取具体的方法对象
+        return signature.getMethod();
+    }
+
+    /**
      * 获取切点方法上面的指定注解
      *
      * @param joinPoint       切点
@@ -58,11 +68,8 @@ public class JanusUtils {
      * @return 注解对象
      */
     public static <T extends Annotation> T getAnnotation(ProceedingJoinPoint joinPoint, Class<T> annotationClass) {
-        // 获取方法签名
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-
-        // 获取具体的方法对象
-        Method method = signature.getMethod();
+        // 获取切点方法
+        Method method = getMethodFromJoinPoint(joinPoint);
 
         T annotation = AnnotationUtils.findAnnotation(method, annotationClass);
         if (annotation == null) {

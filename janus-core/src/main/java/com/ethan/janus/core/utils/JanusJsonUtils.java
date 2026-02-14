@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.util.*;
 
-public class JsonUtils {
+public class JanusJsonUtils {
 
     private static final ObjectMapper ob;
     private static final SimpleDateFormat sdf;

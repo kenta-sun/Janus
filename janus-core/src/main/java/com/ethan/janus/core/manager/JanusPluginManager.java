@@ -4,6 +4,7 @@ import com.ethan.janus.core.annotation.Global;
 import com.ethan.janus.core.exception.JanusException;
 import com.ethan.janus.core.plugin.JanusPlugin;
 import com.ethan.janus.core.utils.JanusAopUtils;
+import com.ethan.janus.core.utils.JanusLogUtils;
 import com.ethan.janus.core.utils.JanusUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,18 +72,23 @@ public class JanusPluginManager implements ApplicationRunner {
         List<JanusPlugin> list = new ArrayList<>();
         for (Class<? extends JanusPlugin> aClass : clazzArr) {
             JanusPlugin janusPlugin = this.methodPluginMap.get(aClass);
-            if (janusPlugin == null) {
+            if (janusPlugin != null) {
+                // 该插件为 方法级别的插件，正常放入list中
+                list.add(janusPlugin);
+            } else {
                 janusPlugin = this.globalPluginMap.get(aClass);
                 if (janusPlugin == null) {
                     // bean 未找到
                     throw new JanusException("No plugin of type [" + aClass.getName() + "] found");
                 } else {
                     // 该插件为全局插件，不能放入list中，需要警告用户
-                    log.error("全局插件不需要配置在 @Janus 注解中");
+                    log.error(
+                            "[Janus] {} >> [{}]is a global plugin, do not configure in @Janus",
+                            JanusLogUtils.FAIL_ICON,
+                            aClass.getName()
+                    );
                 }
             }
-            // 该插件为 方法级别的插件，正常放入list中
-            list.add(janusPlugin);
         }
         return list;
     }

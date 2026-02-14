@@ -2,7 +2,7 @@ package com.ethan.janus.starter;
 
 import com.ethan.janus.core.constants.JanusConstants;
 import com.ethan.janus.core.dto.CompareRes;
-import com.ethan.janus.core.utils.JsonUtils;
+import com.ethan.janus.core.utils.JanusJsonUtils;
 import com.ethan.janus.starter.dto.TestRequest;
 import com.ethan.janus.starter.dto.TestResponse;
 import com.ethan.janus.starter.service.TestInterface;
@@ -70,7 +70,7 @@ public class JanusTests {
         Assertions.assertTrue(primaryTime > 0);
         Assertions.assertTrue(secondaryTime > 0);
         Assertions.assertEquals(JanusConstants.DIFFERENT, compareRes.getCompareStatus());
-        Assertions.assertEquals("{\"res.number\":\"2 / 3\"}", JsonUtils.writeValueAsString(compareRes.getDiffFieldMap()));
+        Assertions.assertEquals("{\"res.number\":\"2 / 3\"}", JanusJsonUtils.writeValueAsString(compareRes.getDiffFieldMap()));
         Assertions.assertEquals("2_qqq", businessKey);
         Assertions.assertEquals("Archimonde", TestAnnotationKey);
     }
