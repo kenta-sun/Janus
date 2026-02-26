@@ -57,6 +57,9 @@ public class JanusAspect {
     @Autowired
     private JanusExpressionEvaluator janusExpressionEvaluator;
 
+    // 缓存忽略字段
+    private final Map<Method, Set<String>> ignoreFieldPathsMap = new ConcurrentHashMap<>();
+
     @Around("@annotation(janus)")
     public Object janusAspect(ProceedingJoinPoint joinPoint, Janus janus) throws Throwable {
         // 如果总开关关闭了，则直接执行切点方法并返回结果
@@ -76,6 +79,10 @@ public class JanusAspect {
                 .isRollback(false)
                 .build();
 
+        /* 切点方法对象 */
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Method method = signature.getMethod();
+
         /* 插件 */
         // 添加插件
         PluginListDTO pluginListDTO = this.addPlugins(janus);
@@ -88,7 +95,7 @@ public class JanusAspect {
         JanusCompare janusCompare = janusCompareManager.getJanusCompare(janus.compareImpl());
 
         /* 业务数据键 */
-        String businessKey = this.getBusinessKey(janus, joinPoint);
+        String businessKey = this.getBusinessKey(janus, joinPoint, method);
 
         /* 设置比对类型 */
         CompareType compareType;
@@ -104,7 +111,7 @@ public class JanusAspect {
         if (ignoreFieldPathsArr == null || ignoreFieldPathsArr.length == 0) {
             ignoreFieldPaths = null;
         } else {
-            ignoreFieldPaths = new HashSet<>(Arrays.asList(janus.ignoreFieldPaths()));
+            ignoreFieldPaths = ignoreFieldPathsMap.computeIfAbsent(method, k -> new HashSet<>(Arrays.asList(ignoreFieldPathsArr)));
         }
 
 
@@ -227,16 +234,14 @@ public class JanusAspect {
     /**
      * 解析SpEL表达式，获取 业务数据键
      */
-    private String getBusinessKey(Janus janus, ProceedingJoinPoint joinPoint) {
+    private String getBusinessKey(Janus janus, ProceedingJoinPoint joinPoint, Method method) {
         // SpEL 表达式
         String businessKeySpEL = janus.businessKey();
         // 表达式为空直接返回
         if (JanusUtils.isBlank(businessKeySpEL)) {
             return "";
         }
-        // 切点方法对象
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        Method method = signature.getMethod();
+
         // 切点所在的原始 bean
         Object target = joinPoint.getTarget();
         Class<?> targetClass = target.getClass();
