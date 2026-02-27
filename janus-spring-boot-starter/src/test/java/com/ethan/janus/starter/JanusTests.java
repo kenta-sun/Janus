@@ -42,13 +42,13 @@ public class JanusTests {
     static Stream<Arguments> janusTestDataProvider() {
         return Stream.of(
                 Arguments.of(
-                        "{\"key\":\"1\"}",
-                        "{\"number\":1}",
+                        TestRequest.builder().key("1").build(),
+                        TestResponse.builder().number(1).build(),
                         "{\"methodId\":\"testSyncCompare\",\"compareRes\":{\"compareStatus\":\"success\"},\"businessKey\":\"1_qqq\",\"testAnnotationKey\":\"Archimonde\"}"
                 ),
                 Arguments.of(
-                        "{\"key\":\"2\"}",
-                        "{\"number\":2}",
+                        TestRequest.builder().key("2").build(),
+                        TestResponse.builder().number(2).build(),
                         "{\"methodId\":\"testSyncCompare\",\"compareRes\":{\"compareStatus\":\"different\",\"diffFieldMap\":{\"res.number\":\"2 / 3\"}},\"businessKey\":\"2_qqq\",\"testAnnotationKey\":\"Archimonde\"}"
                 )
         );
@@ -56,12 +56,8 @@ public class JanusTests {
 
     @ParameterizedTest(name = "案例 {index}: requestStr={0}")
     @MethodSource("janusTestDataProvider")
-    public void janusTest(String requestStr, String responseStr, String pluginResExpectedStr) {
+    public void janusTest(TestRequest request, TestResponse responseExpected, String pluginResExpectedStr) {
         /* 整理测试数据 */
-        TestRequest request = JanusJsonUtils.readValue(requestStr, new TypeReference<TestRequest>() {
-        });
-        TestResponse responseExpected = JanusJsonUtils.readValue(responseStr, new TypeReference<TestResponse>() {
-        });
         PluginRes pluginResExpected = JanusJsonUtils.readValue(pluginResExpectedStr, new TypeReference<PluginRes>() {
         });
         Map<String, Object> expected = new HashMap<>();

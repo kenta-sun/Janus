@@ -1,21 +1,15 @@
 package com.ethan.janus.starter.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Data
 public class TestResponse {
 
     private Integer number;
-
-    public TestResponse() {
-    }
-
-    public TestResponse(Integer number) {
-        this.number = number;
-    }
-
-    public Integer getNumber() {
-        return number;
-    }
-
-    public void setNumber(Integer number) {
-        this.number = number;
-    }
 }

@@ -1,23 +1,15 @@
 package com.ethan.janus.starter.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Data
 public class TestRequest {
 
     private String key;
-
-    public TestRequest() {
-    }
-
-    public TestRequest(String key) {
-        this.key = key;
-    }
-
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
 }
