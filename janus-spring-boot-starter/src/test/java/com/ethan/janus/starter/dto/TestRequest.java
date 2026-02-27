@@ -5,6 +5,9 @@ public class TestRequest {
 
     private String key;
 
+    public TestRequest() {
+    }
+
     public TestRequest(String key) {
         this.key = key;
     }

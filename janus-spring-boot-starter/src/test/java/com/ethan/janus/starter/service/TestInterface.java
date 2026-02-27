@@ -5,5 +5,7 @@ import com.ethan.janus.starter.dto.TestResponse;
 
 public interface TestInterface {
 
-    TestResponse testMethod(TestRequest request);
+    TestResponse testSyncCompare(TestRequest request);
+
+    TestResponse testRollbackOne(TestRequest request);
 }

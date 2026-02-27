@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class SecondaryService implements TestInterface {
 
     @Override
-    public TestResponse testMethod(TestRequest request) {
+    public TestResponse testSyncCompare(TestRequest request) {
         if ("1".equals(request.getKey())) {
             return new TestResponse(1);
         } else if ("2".equals(request.getKey())) {
@@ -21,6 +21,11 @@ public class SecondaryService implements TestInterface {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        return new TestResponse(0);
+    }
+
+    @Override
+    public TestResponse testRollbackOne(TestRequest request) {
         return new TestResponse(0);
     }
 }

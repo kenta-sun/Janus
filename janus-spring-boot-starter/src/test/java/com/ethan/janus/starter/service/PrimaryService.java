@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class PrimaryService implements TestInterface {
 
     @Janus(
-            methodId = "testMethod",
+            methodId = "testSyncCompare",
             compareType = CompareType.SYNC_COMPARE,
             isAsyncCompare = false,
             businessKey = "buildKey(#request.key, 'qqq')",
@@ -23,7 +23,7 @@ public class PrimaryService implements TestInterface {
     )
     @TestAnnotation(value = "Archimonde")
     @Override
-    public TestResponse testMethod(TestRequest request) {
+    public TestResponse testSyncCompare(TestRequest request) {
         if ("1".equals(request.getKey())) {
             return new TestResponse(1);
         } else if ("2".equals(request.getKey())) {
@@ -34,6 +34,18 @@ public class PrimaryService implements TestInterface {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        return new TestResponse(0);
+    }
+
+//    @Janus(
+//            methodId = "testRollbackOne",
+//            compareType = CompareType.SYNC_ROLLBACK_ONE_COMPARE,
+//            isAsyncCompare = false,
+//            businessKey = "#request.key",
+//            plugins = {TestAnnotationJanusPlugin.class, ExecuteTimeJanusPlugin.class}
+//    )
+    @Override
+    public TestResponse testRollbackOne(TestRequest request) {
         return new TestResponse(0);
     }
 }

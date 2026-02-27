@@ -64,6 +64,12 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- 测试用数据库，用于事务相关测试 -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!-- 测试 end -->
     </dependencies>
 

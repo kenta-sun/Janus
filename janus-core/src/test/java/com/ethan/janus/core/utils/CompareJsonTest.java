@@ -35,42 +35,42 @@ public class CompareJsonTest {
                         "{\"\":\"null / notNull\"}"
                 ),
                 Arguments.of(
-                        // 场景1：忽略根级别字段
+                        // 忽略根级别字段
                         "{\"name\":\"John\", \"age\":30}",
                         "{\"name\":\"John\", \"age\":31}",
                         new HashSet<>(Collections.singletonList("age")),
                         "{}"
                 ),
                 Arguments.of(
-                        // 场景2：忽略嵌套字段
+                        // 忽略嵌套字段
                         "{\"wrapper\":{\"status\":\"ok\", \"code\":200}}",
                         "{\"wrapper\":{\"status\":\"fail\", \"code\":500}}",
                         new HashSet<>(Arrays.asList("wrapper.status", "wrapper.code")),
                         "{}"
                 ),
                 Arguments.of(
-                        // 场景3：忽略列表中的字段
+                        // 忽略列表中的字段
                         "{\"list\":[{\"id\":1, \"val\":\"A\"}, {\"id\":2, \"val\":\"B\"}]}",
                         "{\"list\":[{\"id\":1, \"val\":\"X\"}, {\"id\":2, \"val\":\"Y\"}]}",
                         new HashSet<>(Arrays.asList("list[0].val", "list[1].val")),
                         "{}"
                 ),
                 Arguments.of(
-                        // 场景4：忽略部分差异，保留其他差异
+                        // 忽略部分差异，保留其他差异
                         "{\"a\":1, \"b\":2}",
                         "{\"a\":2, \"b\":3}",
                         new HashSet<>(Collections.singletonList("a")),
                         "{\"b\":\"2 / 3\"}"
                 ),
                 Arguments.of(
-                        // 场景5：忽略不存在的字段（不应报错）
+                        // 忽略不存在的字段（不应报错）
                         "{\"a\":1}",
                         "{\"a\":2}",
                         new HashSet<>(Collections.singletonList("z")),
                         "{\"a\":\"1 / 2\"}"
                 ),
                 Arguments.of(
-                        // 场景6：忽略 null vs notNull
+                        // 忽略 null vs notNull
                         "{\"a\":null}",
                         "{\"a\":1}",
                         new HashSet<>(Collections.singletonList("a")),
@@ -79,7 +79,7 @@ public class CompareJsonTest {
         );
     }
 
-    @ParameterizedTest(name = "案例 {index}: 用户名={0}, 预期结果={2}")
+    @ParameterizedTest(name = "案例 {index}: actualJson={0}, expectJson={1}")
     @MethodSource("testCompareJsonDataProvider")
     public void testCompareJson(String actualJson, String expectJson, Set<String> ignoreFieldPaths, String expectedStr) {
         // 测试比对
@@ -116,28 +116,28 @@ public class CompareJsonTest {
                         "{\"\":\"null / notNull\"}"
                 ),
                 Arguments.of(
-                        // 场景1：忽略根级别字段
+                        // 忽略根级别字段
                         "{\"name\":\"John\", \"age\":30}",
                         "{\"name\":\"John\", \"age\":31}",
                         new HashSet<>(Collections.singletonList("age")),
                         "{}"
                 ),
                 Arguments.of(
-                        // 场景4：忽略部分差异，保留其他差异
+                        // 忽略部分差异，保留其他差异
                         "{\"a\":1, \"b\":2}",
                         "{\"a\":2, \"b\":3}",
                         new HashSet<>(Collections.singletonList("a")),
                         "{\"b\":\"2 / 3\"}"
                 ),
                 Arguments.of(
-                        // 场景5：忽略不存在的字段（不应报错）
+                        // 忽略不存在的字段（不应报错）
                         "{\"a\":1}",
                         "{\"a\":2}",
                         new HashSet<>(Collections.singletonList("z")),
                         "{\"a\":\"1 / 2\"}"
                 ),
                 Arguments.of(
-                        // 场景6：忽略 null vs notNull
+                        // 忽略 null vs notNull
                         "{\"a\":null}",
                         "{\"a\":1}",
                         null,

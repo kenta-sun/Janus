@@ -4,6 +4,9 @@ public class TestResponse {
 
     private Integer number;
 
+    public TestResponse() {
+    }
+
     public TestResponse(Integer number) {
         this.number = number;
     }

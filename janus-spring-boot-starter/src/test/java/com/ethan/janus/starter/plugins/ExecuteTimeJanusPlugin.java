@@ -47,19 +47,19 @@ public class ExecuteTimeJanusPlugin extends AbstractDataJanusPlugin<ExecuteTimeJ
     public void beforeCompare(JanusContext context) {
         ExecuteTimeJanusPluginData pluginData = this.getPluginData(context);
         // primary 分支耗时
-        JanusTests.primaryTime = pluginData.getPrimaryStopWatch().getTotalTimeNanos();
+        JanusTests.pluginRes.primaryTime = pluginData.getPrimaryStopWatch().getTotalTimeNanos();
         // secondary 分支耗时
-        JanusTests.secondaryTime = pluginData.getSecondaryStopWatch().getTotalTimeNanos();
+        JanusTests.pluginRes.secondaryTime = pluginData.getSecondaryStopWatch().getTotalTimeNanos();
     }
 
     @Override
     public void afterCompare(JanusContext context) {
-        JanusTests.methodId = context.getMethodId();
-        JanusTests.compareRes = context.getCompareRes();
-        JanusTests.businessKey = context.getBusinessKey();
+        JanusTests.pluginRes.methodId = context.getMethodId();
+        JanusTests.pluginRes.compareRes = context.getCompareRes();
+        JanusTests.pluginRes.businessKey = context.getBusinessKey();
         TestAnnotationJanusPlugin.TestAnnotationJanusPluginData testAnnotationJanusPluginData = this.getOtherPluginData(context, TestAnnotationJanusPlugin.class);
         if (testAnnotationJanusPluginData != null) {
-            JanusTests.TestAnnotationKey = testAnnotationJanusPluginData.getValue();
+            JanusTests.pluginRes.testAnnotationKey = testAnnotationJanusPluginData.getValue();
         }
     }
 
