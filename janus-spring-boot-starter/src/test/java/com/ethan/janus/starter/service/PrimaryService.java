@@ -17,6 +17,7 @@ public class PrimaryService implements TestInterface {
     @Janus(
             methodId = "testMethod",
             compareType = CompareType.SYNC_COMPARE,
+            isAsyncCompare = false,
             businessKey = "buildKey(#request.key, 'qqq')",
             plugins = {TestAnnotationJanusPlugin.class, ExecuteTimeJanusPlugin.class}
     )
