@@ -5,6 +5,7 @@ import com.ethan.janus.core.dto.JanusContext;
 import com.ethan.janus.core.plugin.AbstractDataJanusPlugin;
 import com.ethan.janus.core.utils.JanusJsonUtils;
 import com.ethan.janus.starter.JanusTests;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
@@ -76,6 +77,7 @@ public class ExecuteTimeJanusPlugin extends AbstractDataJanusPlugin<ExecuteTimeJ
         );
     }
 
+    @Data
     public static class ExecuteTimeJanusPluginData {
 
         private LocalDateTime primaryStartDate;
@@ -84,53 +86,5 @@ public class ExecuteTimeJanusPlugin extends AbstractDataJanusPlugin<ExecuteTimeJ
         private LocalDateTime secondaryEndDate;
         private StopWatch primaryStopWatch;
         private StopWatch secondaryStopWatch;
-
-        public LocalDateTime getPrimaryStartDate() {
-            return primaryStartDate;
-        }
-
-        public void setPrimaryStartDate(LocalDateTime primaryStartDate) {
-            this.primaryStartDate = primaryStartDate;
-        }
-
-        public LocalDateTime getPrimaryEndDate() {
-            return primaryEndDate;
-        }
-
-        public void setPrimaryEndDate(LocalDateTime primaryEndDate) {
-            this.primaryEndDate = primaryEndDate;
-        }
-
-        public LocalDateTime getSecondaryStartDate() {
-            return secondaryStartDate;
-        }
-
-        public void setSecondaryStartDate(LocalDateTime secondaryStartDate) {
-            this.secondaryStartDate = secondaryStartDate;
-        }
-
-        public LocalDateTime getSecondaryEndDate() {
-            return secondaryEndDate;
-        }
-
-        public void setSecondaryEndDate(LocalDateTime secondaryEndDate) {
-            this.secondaryEndDate = secondaryEndDate;
-        }
-
-        public StopWatch getPrimaryStopWatch() {
-            return primaryStopWatch;
-        }
-
-        public void setPrimaryStopWatch(StopWatch primaryStopWatch) {
-            this.primaryStopWatch = primaryStopWatch;
-        }
-
-        public StopWatch getSecondaryStopWatch() {
-            return secondaryStopWatch;
-        }
-
-        public void setSecondaryStopWatch(StopWatch secondaryStopWatch) {
-            this.secondaryStopWatch = secondaryStopWatch;
-        }
     }
 }

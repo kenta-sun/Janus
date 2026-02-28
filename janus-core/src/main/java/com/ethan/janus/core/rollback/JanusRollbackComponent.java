@@ -22,11 +22,11 @@ public class JanusRollbackComponent implements JanusRollback {
 
     @Transactional(rollbackFor = Throwable.class)
     public void branchRollback(Runnable runnable) {
+        if (dataSource == null) {
+            runnable.run();
+            return;
+        }
         try {
-            if (dataSource == null) {
-                runnable.run();
-                return;
-            }
             Connection connection = DataSourceUtils.getConnection(dataSource);
             String uuid = UUID.randomUUID().toString();
             // 事务保存点

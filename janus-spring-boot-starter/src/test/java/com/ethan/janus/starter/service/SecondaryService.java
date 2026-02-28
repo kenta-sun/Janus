@@ -71,7 +71,7 @@ public class SecondaryService implements TestInterface {
                     .tblNum(2)
                     .build());
             testRollbackMapper.deleteByKey("delete");
-            int a = 2 / 0;
+            @SuppressWarnings({"NumericOverflow", "divzero", "unused"}) int a = 2 / 0;
         }
         return new TestResponse(0);
     }

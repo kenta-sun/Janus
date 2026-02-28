@@ -80,7 +80,7 @@ public class PrimaryService implements TestInterface {
                     .tblNum(2)
                     .build());
             testRollbackMapper.deleteByKey("delete");
-            int a = 2 / 0;
+            @SuppressWarnings({"NumericOverflow", "divzero", "unused"}) int a = 2 / 0;
         } else if ("masterBranch_err".equals(key)) {
             Integer existNum = testRollbackMapper.selectNumByKey("exist");
             testRollbackMapper.updateByKey("exist", existNum + 1);
