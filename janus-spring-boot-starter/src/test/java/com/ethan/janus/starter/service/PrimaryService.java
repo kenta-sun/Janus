@@ -68,7 +68,7 @@ public class PrimaryService implements TestInterface {
                     .tblNum(2)
                     .build());
             testRollbackMapper.deleteByKey("delete");
-        } else if ("err".equals(key)) {
+        } else if ("compareBranch_err".equals(key)) {
             Integer existNum = testRollbackMapper.selectNumByKey("exist");
             testRollbackMapper.updateByKey("exist", existNum + 1);
             testRollbackMapper.insert(TestRollbackEntity.builder()
@@ -81,6 +81,18 @@ public class PrimaryService implements TestInterface {
                     .build());
             testRollbackMapper.deleteByKey("delete");
             int a = 2 / 0;
+        } else if ("masterBranch_err".equals(key)) {
+            Integer existNum = testRollbackMapper.selectNumByKey("exist");
+            testRollbackMapper.updateByKey("exist", existNum + 1);
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(1)
+                    .build());
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(2)
+                    .build());
+            testRollbackMapper.deleteByKey("delete");
         }
         return new TestResponse(0);
     }

@@ -7,6 +7,7 @@ import com.ethan.janus.starter.dto.TestResponse;
 import com.ethan.janus.starter.dto.TestRollbackEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Secondary
 @Service
@@ -30,6 +31,7 @@ public class SecondaryService implements TestInterface {
         return new TestResponse(0);
     }
 
+    @Transactional(rollbackFor = Throwable.class)
     @Override
     public TestResponse testRollbackOne(TestRequest request) {
         String key = request.getKey();
@@ -45,7 +47,7 @@ public class SecondaryService implements TestInterface {
                     .tblNum(2)
                     .build());
             testRollbackMapper.deleteByKey("delete");
-        } else if ("err".equals(key)) {
+        } else if ("compareBranch_err".equals(key)) {
             Integer existNum = testRollbackMapper.selectNumByKey("exist");
             testRollbackMapper.updateByKey("exist", existNum + 1);
             testRollbackMapper.insert(TestRollbackEntity.builder()
@@ -57,6 +59,19 @@ public class SecondaryService implements TestInterface {
                     .tblNum(2)
                     .build());
             testRollbackMapper.deleteByKey("delete");
+        } else if ("masterBranch_err".equals(key)) {
+            Integer existNum = testRollbackMapper.selectNumByKey("exist");
+            testRollbackMapper.updateByKey("exist", existNum + 1);
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(1)
+                    .build());
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(2)
+                    .build());
+            testRollbackMapper.deleteByKey("delete");
+            int a = 2 / 0;
         }
         return new TestResponse(0);
     }

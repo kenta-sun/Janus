@@ -101,9 +101,15 @@ public class JanusTests {
                         "{\"methodId\":\"testRollbackOne\",\"masterBranchName\":\"secondary\",\"compareRes\":{\"compareStatus\":\"success\"},\"businessKey\":\"a\",\"resTblNum\":3}"
                 ),
                 Arguments.of(
-                        TestRequest.builder().key("err").build(),
+                        TestRequest.builder().key("compareBranch_err").build(),
                         TestResponse.builder().number(0).build(),
-                        "{\"methodId\":\"testRollbackOne\",\"masterBranchName\":\"secondary\",\"compareRes\":{\"compareStatus\":\"primary_error\"},\"businessKey\":\"err\",\"resTblNum\":3}"
+                        "{\"methodId\":\"testRollbackOne\",\"masterBranchName\":\"secondary\",\"compareRes\":{\"compareStatus\":\"primary_error\"},\"businessKey\":\"compareBranch_err\",\"resTblNum\":3}"
+                )
+                ,
+                Arguments.of(
+                        TestRequest.builder().key("masterBranch_err").build(),
+                        null,
+                        "{\"methodId\":\"testRollbackOne\",\"masterBranchName\":\"secondary\",\"compareRes\":{\"compareStatus\":\"secondary_error\"},\"businessKey\":\"masterBranch_err\",\"resTblNum\":1}"
                 )
         );
     }
@@ -134,7 +140,13 @@ public class JanusTests {
 
         /* 执行测试方法 */
         pluginRes = new PluginRes();
-        TestResponse response = transactionalService.testRollbackOne(request);
+        TestResponse response = null;
+        try {
+            response = transactionalService.testRollbackOne(request);
+        } catch (Throwable e) {
+            //noinspection CallToPrintStackTrace
+            e.printStackTrace();
+        }
         JanusTests.pluginRes.resTblNum = testRollbackMapper.selectNumByKey("exist");
         System.err.println(JanusJsonUtils.writeValueAsString(pluginRes));
 
@@ -170,8 +182,7 @@ public class JanusTests {
                         "tbl_num INT" +
                         ")"
         );
-        // 由于 testRollbackOne1 方法中，多套了一层 TransactionalService 导致多加了1，这里初始化写成2保持期望值一致。
-        jdbcTemplate.update("INSERT INTO test_rollback (tbl_key, tbl_num) VALUES (?, ?)", "exist", 2);
+        jdbcTemplate.update("INSERT INTO test_rollback (tbl_key, tbl_num) VALUES (?, ?)", "exist", 1);
         jdbcTemplate.update("INSERT INTO test_rollback (tbl_key, tbl_num) VALUES (?, ?)", "delete", 1);
 
         /* 关闭一级缓存清理 */
@@ -183,7 +194,15 @@ public class JanusTests {
 
         /* 执行测试方法 */
         pluginRes = new PluginRes();
-        TestResponse response = testInterface.testRollbackOne(request);
+        TestResponse response = null;
+        try {
+            response = testInterface.testRollbackOne(request);
+            // 由于 testRollbackOne1 方法中，多套了一层 TransactionalService 导致多加了1，这里+1保持期望值一致。
+            jdbcTemplate.update("UPDATE test_rollback SET tbl_num = tbl_num + 1 WHERE tbl_key = ?", "exist");
+        } catch (Throwable e) {
+            //noinspection CallToPrintStackTrace
+            e.printStackTrace();
+        }
         JanusTests.pluginRes.resTblNum = testRollbackMapper.selectNumByKey("exist");
         System.err.println(JanusJsonUtils.writeValueAsString(pluginRes));
 
