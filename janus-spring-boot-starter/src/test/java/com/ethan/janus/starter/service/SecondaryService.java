@@ -75,4 +75,49 @@ public class SecondaryService implements TestInterface {
         }
         return new TestResponse(0);
     }
+
+    @Transactional(rollbackFor = Throwable.class)
+    @Override
+    public TestResponse testRollbackAll(TestRequest request) {
+        String key = request.getKey();
+        if ("a".equals(key)) {
+            Integer existNum = testRollbackMapper.selectNumByKey("exist");
+            testRollbackMapper.updateByKey("exist", existNum + 1);
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(1)
+                    .build());
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(2)
+                    .build());
+            testRollbackMapper.deleteByKey("delete");
+        } else if ("compareBranch_err".equals(key)) {
+            Integer existNum = testRollbackMapper.selectNumByKey("exist");
+            testRollbackMapper.updateByKey("exist", existNum + 1);
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(1)
+                    .build());
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(2)
+                    .build());
+            testRollbackMapper.deleteByKey("delete");
+        } else if ("masterBranch_err".equals(key)) {
+            Integer existNum = testRollbackMapper.selectNumByKey("exist");
+            testRollbackMapper.updateByKey("exist", existNum + 1);
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(1)
+                    .build());
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(2)
+                    .build());
+            testRollbackMapper.deleteByKey("delete");
+            @SuppressWarnings({"NumericOverflow", "divzero", "unused"}) int a = 2 / 0;
+        }
+        return new TestResponse(0);
+    }
 }

@@ -96,4 +96,56 @@ public class PrimaryService implements TestInterface {
         }
         return new TestResponse(0);
     }
+
+    @Janus(
+            methodId = "testRollbackAll",
+            compareType = CompareType.SYNC_ROLLBACK_ALL_COMPARE,
+            isAsyncCompare = false,
+            businessKey = "#request.key",
+            plugins = {TestRollbackOneQueryDataJanusPlugin.class}
+    )
+    @Transactional(rollbackFor = Throwable.class)
+    @Override
+    public TestResponse testRollbackAll(TestRequest request) {
+        String key = request.getKey();
+        if ("a".equals(key)) {
+            Integer existNum = testRollbackMapper.selectNumByKey("exist");
+            testRollbackMapper.updateByKey("exist", existNum + 1);
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(1)
+                    .build());
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(2)
+                    .build());
+            testRollbackMapper.deleteByKey("delete");
+        } else if ("compareBranch_err".equals(key)) {
+            Integer existNum = testRollbackMapper.selectNumByKey("exist");
+            testRollbackMapper.updateByKey("exist", existNum + 1);
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(1)
+                    .build());
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(2)
+                    .build());
+            testRollbackMapper.deleteByKey("delete");
+            @SuppressWarnings({"NumericOverflow", "divzero", "unused"}) int a = 2 / 0;
+        } else if ("masterBranch_err".equals(key)) {
+            Integer existNum = testRollbackMapper.selectNumByKey("exist");
+            testRollbackMapper.updateByKey("exist", existNum + 1);
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(1)
+                    .build());
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(2)
+                    .build());
+            testRollbackMapper.deleteByKey("delete");
+        }
+        return new TestResponse(0);
+    }
 }

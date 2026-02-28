@@ -21,4 +21,11 @@ public class TransactionalService {
         testRollbackMapper.updateByKey("exist", existNum + 1);
         return testInterface.testRollbackOne(request);
     }
+
+    @Transactional(rollbackFor = Throwable.class)
+    public TestResponse testRollbackAll(TestRequest request) {
+        Integer existNum = testRollbackMapper.selectNumByKey("exist");
+        testRollbackMapper.updateByKey("exist", existNum + 1);
+        return testInterface.testRollbackAll(request);
+    }
 }

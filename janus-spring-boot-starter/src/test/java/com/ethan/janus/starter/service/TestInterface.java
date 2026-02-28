@@ -8,4 +8,6 @@ public interface TestInterface {
     TestResponse testSyncCompare(TestRequest request);
 
     TestResponse testRollbackOne(TestRequest request);
+
+    TestResponse testRollbackAll(TestRequest request);
 }
