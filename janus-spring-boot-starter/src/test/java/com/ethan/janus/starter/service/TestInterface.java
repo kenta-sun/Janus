@@ -10,4 +10,6 @@ public interface TestInterface {
     TestResponse testRollbackOne(TestRequest request);
 
     TestResponse testRollbackAll(TestRequest request);
+
+    TestResponse testIgnore();
 }

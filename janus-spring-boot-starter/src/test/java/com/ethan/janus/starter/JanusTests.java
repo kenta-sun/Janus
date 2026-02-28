@@ -220,6 +220,7 @@ public class JanusTests {
         }
     }
 
+
     static Stream<Arguments> testRollbackAllDataProvider() {
         return Stream.of(
                 Arguments.of( // clearCache 单测
@@ -342,6 +343,42 @@ public class JanusTests {
         actual.put("response", response);
         actual.put("pluginRes", pluginRes);
         Map<String, String> compareResMap = JanusJsonUtils.compareObj(actual, expected);
+        if (!compareResMap.isEmpty()) {
+            Assertions.fail(JanusJsonUtils.writeValueAsString(compareResMap));
+        }
+    }
+
+
+    static Stream<Arguments> testIgnoreDataProvider() {
+        return Stream.of(
+                Arguments.of(
+                        "{\"methodId\":\"testIgnore\",\"masterBranchName\":\"secondary\",\"compareRes\":{\"compareStatus\":\"success\"},\"businessKey\":\"\"}"
+                ),
+                Arguments.of(
+                        "{\"methodId\":\"testIgnore\",\"masterBranchName\":\"secondary\",\"compareRes\":{\"compareStatus\":\"success\"},\"businessKey\":\"\"}"
+                )
+        );
+    }
+
+    @ParameterizedTest(name = "案例 {index}")
+    @MethodSource("testIgnoreDataProvider")
+    public void testIgnore(String pluginResExpectedStr) {
+        /* 整理测试数据 */
+        PluginRes pluginResExpected = JanusJsonUtils.readValue(pluginResExpectedStr, new TypeReference<PluginRes>() {
+        });
+
+        /* 执行测试方法 */
+        pluginRes = new PluginRes();
+        TestResponse testResponse = testInterface.testIgnore();
+        System.err.println(JanusJsonUtils.writeValueAsString(pluginRes));
+
+        /* 校验结果 */
+        Assertions.assertNotNull(testResponse);
+        Assertions.assertTrue(pluginRes.primaryTime > 0);
+        pluginRes.primaryTime = null;
+        Assertions.assertTrue(pluginRes.secondaryTime > 0);
+        pluginRes.secondaryTime = null;
+        Map<String, String> compareResMap = JanusJsonUtils.compareObj(pluginRes, pluginResExpected);
         if (!compareResMap.isEmpty()) {
             Assertions.fail(JanusJsonUtils.writeValueAsString(compareResMap));
         }

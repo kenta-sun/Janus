@@ -4,6 +4,7 @@ import com.ethan.janus.core.annotation.Janus;
 import com.ethan.janus.core.constants.CompareType;
 import com.ethan.janus.starter.annotation.TestAnnotation;
 import com.ethan.janus.starter.dao.TestRollbackMapper;
+import com.ethan.janus.starter.dto.TestIgnoreDTO;
 import com.ethan.janus.starter.dto.TestRequest;
 import com.ethan.janus.starter.dto.TestResponse;
 import com.ethan.janus.starter.dto.TestRollbackEntity;
@@ -14,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 @Primary
 @Service
@@ -33,16 +37,22 @@ public class PrimaryService implements TestInterface {
     @Override
     public TestResponse testSyncCompare(TestRequest request) {
         if ("1".equals(request.getKey())) {
-            return new TestResponse(1);
+            return TestResponse.builder()
+                    .number(1)
+                    .build();
         } else if ("2".equals(request.getKey())) {
-            return new TestResponse(2);
+            return TestResponse.builder()
+                    .number(2)
+                    .build();
         }
         try {
             Thread.sleep(10);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        return new TestResponse(0);
+        return TestResponse.builder()
+                .number(0)
+                .build();
     }
 
     @Janus(
@@ -94,7 +104,9 @@ public class PrimaryService implements TestInterface {
                     .build());
             testRollbackMapper.deleteByKey("delete");
         }
-        return new TestResponse(0);
+        return TestResponse.builder()
+                .number(0)
+                .build();
     }
 
     @Janus(
@@ -146,6 +158,26 @@ public class PrimaryService implements TestInterface {
                     .build());
             testRollbackMapper.deleteByKey("delete");
         }
-        return new TestResponse(0);
+        return TestResponse.builder()
+                .number(0)
+                .build();
+    }
+
+    @Janus(
+            methodId = "testIgnore",
+            compareType = CompareType.SYNC_COMPARE,
+            isAsyncCompare = false,
+            ignoreFieldPaths = {"res.ignoreStr1", "res.ignoreList.str2"}
+    )
+    @Override
+    public TestResponse testIgnore() {
+        return TestResponse.builder()
+                .number(1)
+                .ignoreStr1("123")
+                .ignoreList(new ArrayList<>(Arrays.asList(
+                        TestIgnoreDTO.builder().str1("1").str2("2").build(),
+                        TestIgnoreDTO.builder().str1("1").str2("2").build()
+                )))
+                .build();
     }
 }

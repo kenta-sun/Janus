@@ -5,18 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Data
-public class TestResponse {
+public class TestIgnoreDTO {
 
-    private Integer number;
+    private String str1;
 
-    private String ignoreStr1;
-
-    private List<TestIgnoreDTO> ignoreList;
-
+    private String str2;
 }

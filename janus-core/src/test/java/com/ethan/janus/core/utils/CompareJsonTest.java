@@ -52,7 +52,7 @@ public class CompareJsonTest {
                         // 忽略列表中的字段
                         "{\"list\":[{\"id\":1, \"val\":\"A\"}, {\"id\":2, \"val\":\"B\"}]}",
                         "{\"list\":[{\"id\":1, \"val\":\"X\"}, {\"id\":2, \"val\":\"Y\"}]}",
-                        new HashSet<>(Arrays.asList("list[0].val", "list[1].val")),
+                        new HashSet<>(Arrays.asList("list.val", "list.val")),
                         "{}"
                 ),
                 Arguments.of(

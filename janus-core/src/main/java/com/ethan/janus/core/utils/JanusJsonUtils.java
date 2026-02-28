@@ -212,7 +212,8 @@ public class JanusJsonUtils {
         for (String key : keySet) {
             String currentPath = buildPath(path, key);
             // 提前检查忽略
-            if (ignoreFieldPaths != null && ignoreFieldPaths.contains(currentPath)) {
+            String checkIgnorePath = toIndexFreePath(currentPath);
+            if (ignoreFieldPaths != null && ignoreFieldPaths.contains(checkIgnorePath)) {
                 continue;
             }
 
@@ -348,5 +349,17 @@ public class JanusJsonUtils {
      */
     private static int length(final CharSequence cs) {
         return cs == null ? 0 : cs.length();
+    }
+
+    /**
+     * 将路径中的数组下标 [0], [1] 等移除，得到无下标路径。
+     * 例如：list[0].val -> list.val，用于匹配时：配置 list.val 可忽略所有 list[N].val
+     */
+    private static String toIndexFreePath(String path) {
+        if (isNotBlank(path) && path.contains("[")) {
+            return path.replaceAll("\\[\\d+]", "");
+        } else {
+            return path;
+        }
     }
 }
