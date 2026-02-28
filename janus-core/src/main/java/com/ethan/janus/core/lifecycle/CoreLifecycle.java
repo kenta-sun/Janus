@@ -75,8 +75,8 @@ public class CoreLifecycle implements Lifecycle {
         }
         // 切点
         ProceedingJoinPoint joinPoint = context.getJoinPoint();
+        Object res = null;
         try {
-            Object res;
             // 执行分支方法
             if (branch.getIsAsync() != null && branch.getIsAsync()) {
                 // 异步执行切点方法
@@ -89,17 +89,17 @@ public class CoreLifecycle implements Lifecycle {
             } else { // 同步执行，直接 proceed
                 res = joinPoint.proceed();
             }
-            branch.setBranchRes(
-                    BranchRes.builder()
-                            .res(res)
-                            .build()
-            );
             this.logInfo(context, "primaryExecute", "res", res);
         } catch (Throwable e) {
             // 保存异常对象
             branch.setException(e);
             this.logError(context, "primaryExecute", e);
         } finally {
+            branch.setBranchRes(
+                    BranchRes.builder()
+                            .res(res)
+                            .build()
+            );
             branch.setIsExecuted(true);
         }
     }
@@ -117,20 +117,21 @@ public class CoreLifecycle implements Lifecycle {
         }
         // 切点
         ProceedingJoinPoint joinPoint = context.getJoinPoint();
+        Object res = null;
         try {
             // 执行分支方法
-            Object res = this.invokeSecondaryMethod(joinPoint);
-            branch.setBranchRes(
-                    BranchRes.builder()
-                            .res(res)
-                            .build()
-            );
+            res = this.invokeSecondaryMethod(joinPoint);
             this.logInfo(context, "secondaryExecute", "res", res);
         } catch (Throwable e) {
             // 保存异常对象
             branch.setException(e);
             this.logError(context, "secondaryExecute", e);
         } finally {
+            branch.setBranchRes(
+                    BranchRes.builder()
+                            .res(res)
+                            .build()
+            );
             branch.setIsExecuted(true);
         }
     }
