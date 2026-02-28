@@ -50,7 +50,7 @@ public class SecondaryService implements TestInterface {
         } else if ("err".equals(key)) {
             testRollbackMapper.deleteByKey("pre");
         }
-        testRollbackMapper.selectNumByKey("exist");
+//        testRollbackMapper.selectNumByKey("exist");
         return new TestResponse(0);
     }
 }

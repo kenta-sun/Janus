@@ -73,7 +73,6 @@ public class PrimaryService implements TestInterface {
         } else if ("err".equals(key)) {
             testRollbackMapper.deleteByKey("pre");
         }
-        testRollbackMapper.selectNumByKey("exist");
         return new TestResponse(0);
     }
 }

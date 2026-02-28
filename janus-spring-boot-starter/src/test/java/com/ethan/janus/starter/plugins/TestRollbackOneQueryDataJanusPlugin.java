@@ -38,16 +38,22 @@ public class TestRollbackOneQueryDataJanusPlugin implements JanusPlugin {
     }
 
     private List<TestRollbackEntity> getQueryRes(JanusContext context) {
+        // 获取入参中的key
         Object[] args = context.getArgs();
         TestRequest request = (TestRequest) args[0];
         String reqKey = request.getKey();
+        // 公共key
         List<String> keyList = new ArrayList<>(Arrays.asList("exist", "delete"));
         keyList.add(reqKey);
+        // 查询落表结果
         List<TestRollbackEntity> queryRes = new ArrayList<>();
         for (String key : keyList) {
             List<TestRollbackEntity> queryList = testRollbackMapper.selectByKey(key);
             queryRes.addAll(queryList);
         }
+        // 用于触发一级缓存
+        testRollbackMapper.selectNumByKey("exist");
+        // 排序并返回
         return queryRes.stream()
                 .sorted(Comparator.comparing(TestRollbackEntity::getTblKey)
                         .thenComparing(TestRollbackEntity::getTblNum))
