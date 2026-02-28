@@ -45,10 +45,18 @@ public class SecondaryService implements TestInterface {
                     .tblNum(2)
                     .build());
             testRollbackMapper.deleteByKey("delete");
-        } else if ("b".equals(key)) {
-            testRollbackMapper.updateByKey("pre", 20);
         } else if ("err".equals(key)) {
-            testRollbackMapper.deleteByKey("pre");
+            Integer existNum = testRollbackMapper.selectNumByKey("exist");
+            testRollbackMapper.updateByKey("exist", existNum + 1);
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(1)
+                    .build());
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(2)
+                    .build());
+            testRollbackMapper.deleteByKey("delete");
         }
         return new TestResponse(0);
     }

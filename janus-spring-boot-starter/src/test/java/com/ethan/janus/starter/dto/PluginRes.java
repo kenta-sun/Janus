@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class PluginRes {
 
     public String methodId;
+    public String masterBranchName;
     public Long primaryTime;
     public Long secondaryTime;
     public CompareRes compareRes;

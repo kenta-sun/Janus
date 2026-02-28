@@ -1,5 +1,6 @@
 package com.ethan.janus.starter.plugins;
 
+import com.ethan.janus.core.annotation.Global;
 import com.ethan.janus.core.dto.JanusContext;
 import com.ethan.janus.core.plugin.AbstractDataJanusPlugin;
 import com.ethan.janus.core.utils.JanusJsonUtils;
@@ -10,6 +11,7 @@ import org.springframework.util.StopWatch;
 
 import java.time.LocalDateTime;
 
+@Global
 @Slf4j
 @Component
 public class ExecuteTimeJanusPlugin extends AbstractDataJanusPlugin<ExecuteTimeJanusPlugin.ExecuteTimeJanusPluginData> {
@@ -58,6 +60,7 @@ public class ExecuteTimeJanusPlugin extends AbstractDataJanusPlugin<ExecuteTimeJ
     @Override
     public void afterCompare(JanusContext context) {
         JanusTests.pluginRes.methodId = context.getMethodId();
+        JanusTests.pluginRes.masterBranchName = context.getMasterBranchName();
         JanusTests.pluginRes.compareRes = context.getCompareRes();
         JanusTests.pluginRes.businessKey = context.getBusinessKey();
         TestAnnotationJanusPlugin.TestAnnotationJanusPluginData testAnnotationJanusPluginData = this.getOtherPluginData(context, TestAnnotationJanusPlugin.class);

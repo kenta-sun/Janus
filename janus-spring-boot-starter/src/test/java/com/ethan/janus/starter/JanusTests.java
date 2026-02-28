@@ -53,12 +53,12 @@ public class JanusTests {
                 Arguments.of(
                         TestRequest.builder().key("1").build(),
                         TestResponse.builder().number(1).build(),
-                        "{\"methodId\":\"testSyncCompare\",\"compareRes\":{\"compareStatus\":\"success\"},\"businessKey\":\"1_qqq\",\"testAnnotationKey\":\"Archimonde\"}"
+                        "{\"methodId\":\"testSyncCompare\",\"masterBranchName\":\"primary\",\"compareRes\":{\"compareStatus\":\"success\"},\"businessKey\":\"1_qqq\",\"testAnnotationKey\":\"Archimonde\"}"
                 ),
                 Arguments.of(
                         TestRequest.builder().key("2").build(),
                         TestResponse.builder().number(2).build(),
-                        "{\"methodId\":\"testSyncCompare\",\"compareRes\":{\"compareStatus\":\"different\",\"diffFieldMap\":{\"res.number\":\"2 / 3\"}},\"businessKey\":\"2_qqq\",\"testAnnotationKey\":\"Archimonde\"}"
+                        "{\"methodId\":\"testSyncCompare\",\"masterBranchName\":\"primary\",\"compareRes\":{\"compareStatus\":\"different\",\"diffFieldMap\":{\"res.number\":\"2 / 3\"}},\"businessKey\":\"2_qqq\",\"testAnnotationKey\":\"Archimonde\"}"
                 )
         );
     }
@@ -98,14 +98,13 @@ public class JanusTests {
                 Arguments.of( // clearCache 单测
                         TestRequest.builder().key("a").build(),
                         TestResponse.builder().number(0).build(),
-                        "{\"methodId\":\"testRollbackOne\",\"compareRes\":{\"compareStatus\":\"success\"},\"businessKey\":\"a\",\"resTblNum\":3}"
+                        "{\"methodId\":\"testRollbackOne\",\"masterBranchName\":\"secondary\",\"compareRes\":{\"compareStatus\":\"success\"},\"businessKey\":\"a\",\"resTblNum\":3}"
+                ),
+                Arguments.of(
+                        TestRequest.builder().key("err").build(),
+                        TestResponse.builder().number(0).build(),
+                        "{\"methodId\":\"testRollbackOne\",\"masterBranchName\":\"secondary\",\"compareRes\":{\"compareStatus\":\"primary_error\"},\"businessKey\":\"err\",\"resTblNum\":3}"
                 )
-//                ,
-//                Arguments.of(
-//                        TestRequest.builder().key("b").build(),
-//                        TestResponse.builder().number(2).build(),
-//                        ""
-//                )
         );
     }
 
