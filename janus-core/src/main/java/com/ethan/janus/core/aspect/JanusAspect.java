@@ -25,6 +25,9 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -56,6 +59,8 @@ public class JanusAspect {
     private JanusConfigProperties janusConfigProperties;
     @Autowired
     private JanusExpressionEvaluator janusExpressionEvaluator;
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
     // 缓存忽略字段
     private final Map<Method, Set<String>> ignoreFieldPathsMap = new ConcurrentHashMap<>();
@@ -146,10 +151,33 @@ public class JanusAspect {
 
         /* 根据场景，在主线程中，选择分支代码执行 */
         if (CompareType.hasRollback(compareType)) {
-            // CompareType 为 ROLLBACK 的场景下，先执行比对分支代码
-            this.compareBranchExecute(context);
-            // 执行主分支代码
-            this.masterBranchExecute(context);
+            // 开启一个总事务，让2个分支在一个事务中，尽量在事务层面保持数据一致
+            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus status) {
+                    try {
+                        // CompareType 为 ROLLBACK 的场景下，先执行比对分支代码
+                        compareBranchExecute(context);
+                        // 执行主分支代码
+                        masterBranchExecute(context);
+                    } catch (Throwable e) {
+                        /*
+                         * 必定抛出 RuntimeException，让事务可以回滚。
+                         * 由于分支运行时已经catch了异常，所以这里一般走不进来，仅作为兜底逻辑
+                         */
+                        if (e instanceof RuntimeException) {
+                            throw e;
+                        } else {
+                            throw new RuntimeException(e);
+                        }
+                    } finally {
+                        // 同步 rollback-only 状态
+                        if (status.isRollbackOnly()) {
+                            status.setRollbackOnly();
+                        }
+                    }
+                }
+            });
         } else {
             // 没有 ROLLBACK 场景，仅运行主分支代码
             this.masterBranchExecute(context);

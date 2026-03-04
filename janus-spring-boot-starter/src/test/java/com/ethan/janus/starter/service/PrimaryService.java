@@ -10,7 +10,7 @@ import com.ethan.janus.starter.dto.TestResponse;
 import com.ethan.janus.starter.dto.TestRollbackEntity;
 import com.ethan.janus.starter.plugins.SwitchJanusPlugin;
 import com.ethan.janus.starter.plugins.TestAnnotationJanusPlugin;
-import com.ethan.janus.starter.plugins.TestRollbackOneQueryDataJanusPlugin;
+import com.ethan.janus.starter.plugins.TestRollbackQueryDataJanusPlugin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -60,7 +60,7 @@ public class PrimaryService implements TestInterface {
             compareType = CompareType.SYNC_ROLLBACK_ONE_COMPARE,
             isAsyncCompare = false,
             businessKey = "#request.key",
-            plugins = {TestRollbackOneQueryDataJanusPlugin.class}
+            plugins = {TestRollbackQueryDataJanusPlugin.class}
     )
     @Transactional(rollbackFor = Throwable.class)
     @Override
@@ -114,7 +114,7 @@ public class PrimaryService implements TestInterface {
             compareType = CompareType.SYNC_ROLLBACK_ALL_COMPARE,
             isAsyncCompare = false,
             businessKey = "#request.key",
-            plugins = {TestRollbackOneQueryDataJanusPlugin.class}
+            plugins = {TestRollbackQueryDataJanusPlugin.class}
     )
     @Transactional(rollbackFor = Throwable.class)
     @Override

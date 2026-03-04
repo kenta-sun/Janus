@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class TestRollbackOneQueryDataJanusPlugin implements JanusPlugin {
+public class TestRollbackQueryDataJanusPlugin implements JanusPlugin {
 
     @Autowired
     private TestRollbackMapper testRollbackMapper;

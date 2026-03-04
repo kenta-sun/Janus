@@ -1,7 +1,6 @@
 package com.ethan.janus.starter;
 
 import com.ethan.janus.core.utils.JanusJsonUtils;
-import com.ethan.janus.starter.config.JanusRollbackClearCacheImpl;
 import com.ethan.janus.starter.dao.TestRollbackMapper;
 import com.ethan.janus.starter.dto.PluginRes;
 import com.ethan.janus.starter.dto.TestRequest;
@@ -37,8 +36,6 @@ public class JanusTests {
     private TransactionalService transactionalService;
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private JanusRollbackClearCacheImpl janusRollbackClearCache;
 
     public static PluginRes pluginRes;
 
@@ -135,9 +132,6 @@ public class JanusTests {
         jdbcTemplate.update("INSERT INTO test_rollback (tbl_key, tbl_num) VALUES (?, ?)", "exist", 1);
         jdbcTemplate.update("INSERT INTO test_rollback (tbl_key, tbl_num) VALUES (?, ?)", "delete", 1);
 
-        /* 开启一级缓存清理 */
-        janusRollbackClearCache.isClearCache = true;
-
         /* 执行测试方法 */
         pluginRes = new PluginRes();
         TestResponse response = null;
@@ -185,13 +179,6 @@ public class JanusTests {
         jdbcTemplate.update("INSERT INTO test_rollback (tbl_key, tbl_num) VALUES (?, ?)", "exist", 1);
         jdbcTemplate.update("INSERT INTO test_rollback (tbl_key, tbl_num) VALUES (?, ?)", "delete", 1);
 
-        /* 关闭一级缓存清理 */
-        /*
-         * 由于没有上层事务，primary 和 secondary 分支是2个不同的事务，不共享session。这里关闭 clearCache 也可以正常运行。
-         * 真正使用框架时，不要关闭 clearCache。
-         */
-        janusRollbackClearCache.isClearCache = false;
-
         /* 执行测试方法 */
         pluginRes = new PluginRes();
         TestResponse response = null;
@@ -232,8 +219,7 @@ public class JanusTests {
                         TestRequest.builder().key("compareBranch_err").build(),
                         TestResponse.builder().number(0).build(),
                         "{\"methodId\":\"testRollbackAll\",\"masterBranchName\":\"secondary\",\"compareRes\":{\"compareStatus\":\"primary_error\"},\"businessKey\":\"compareBranch_err\",\"resTblNum\":2}"
-                )
-                ,
+                ),
                 Arguments.of(
                         TestRequest.builder().key("masterBranch_err").build(),
                         null,
@@ -262,9 +248,6 @@ public class JanusTests {
         );
         jdbcTemplate.update("INSERT INTO test_rollback (tbl_key, tbl_num) VALUES (?, ?)", "exist", 1);
         jdbcTemplate.update("INSERT INTO test_rollback (tbl_key, tbl_num) VALUES (?, ?)", "delete", 1);
-
-        /* 开启一级缓存清理 */
-        janusRollbackClearCache.isClearCache = true;
 
         /* 执行测试方法 */
         pluginRes = new PluginRes();
@@ -312,13 +295,6 @@ public class JanusTests {
         );
         jdbcTemplate.update("INSERT INTO test_rollback (tbl_key, tbl_num) VALUES (?, ?)", "exist", 1);
         jdbcTemplate.update("INSERT INTO test_rollback (tbl_key, tbl_num) VALUES (?, ?)", "delete", 1);
-
-        /* 关闭一级缓存清理 */
-        /*
-         * 由于没有上层事务，primary 和 secondary 分支是2个不同的事务，不共享session。这里关闭 clearCache 也可以正常运行。
-         * 真正使用框架时，不要关闭 clearCache。
-         */
-        janusRollbackClearCache.isClearCache = false;
 
         /* 执行测试方法 */
         pluginRes = new PluginRes();

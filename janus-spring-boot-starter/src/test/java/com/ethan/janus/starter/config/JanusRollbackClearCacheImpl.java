@@ -11,12 +11,8 @@ public class JanusRollbackClearCacheImpl implements JanusRollbackClearCache {
     @Autowired
     private SqlSessionTemplate sqlSessionTemplate;
 
-    public boolean isClearCache = true;
-
     @Override
     public void clearCache() {
-        if (isClearCache) {
-            sqlSessionTemplate.clearCache();
-        }
+        sqlSessionTemplate.clearCache();
     }
 }

@@ -4,7 +4,6 @@ import com.ethan.janus.core.exception.JanusException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.ConnectionHolder;
 import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.sql.DataSource;
@@ -20,7 +19,6 @@ public class JanusRollbackComponent implements JanusRollback {
     @Autowired(required = false)
     private JanusRollbackClearCache janusRollbackClearCache;
 
-    @Transactional(rollbackFor = Throwable.class)
     public void branchRollback(Runnable runnable) {
         if (dataSource == null) {
             runnable.run();
@@ -43,6 +41,8 @@ public class JanusRollbackComponent implements JanusRollback {
                 try {
                     // 回滚到事务保存点，而不是回滚整个事务。
                     connection.rollback(savepoint);
+                    // 释放资源
+                    connection.releaseSavepoint(savepoint);
                 } catch (SQLException e) {
                     //noinspection ThrowFromFinallyBlock
                     throw new JanusException("savepoint回滚报错", e);
