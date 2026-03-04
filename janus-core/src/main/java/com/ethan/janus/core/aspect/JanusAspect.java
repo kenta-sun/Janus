@@ -133,15 +133,13 @@ public class JanusAspect {
                 .ignoreFieldPaths(ignoreFieldPaths)
                 .build();
 
-        if (log.isInfoEnabled()) {
-            log.info(
-                    "[Janus] {} [methodId:{}] [businessKey:{}] [lifecycle:Janus begin] >> compareType={}",
-                    JanusLogUtils.SUCCESS_ICON,
-                    context.getMethodId(),
-                    context.getBusinessKey(),
-                    compareType.name()
-            );
-        }
+        log.debug(
+                "[Janus] {} [methodId:{}] [businessKey:{}] [lifecycle:Janus begin] >> compareType={}",
+                JanusLogUtils.SUCCESS_ICON,
+                context.getMethodId(),
+                context.getBusinessKey(),
+                compareType.name()
+        );
 
         /* 分流 */
         context.getLifecycle().switchBranch(context);

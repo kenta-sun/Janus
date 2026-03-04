@@ -69,7 +69,7 @@ public class ExecuteTimeJanusPlugin extends AbstractDataJanusPlugin<ExecuteTimeJ
             JanusTests.pluginRes.testAnnotationKey = testAnnotationJanusPluginData.getValue();
         }
 
-        log.info(
+        log.debug(
                 "primaryRes={}, secondaryRes={}, compareRes={}",
                 JanusJsonUtils.writeValueAsString(context.getPrimaryBranch().getBranchRes()),
                 JanusJsonUtils.writeValueAsString(context.getSecondaryBranch().getBranchRes()),
