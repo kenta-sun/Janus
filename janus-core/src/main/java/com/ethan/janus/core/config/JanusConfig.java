@@ -4,6 +4,8 @@ import com.ethan.janus.core.compare.JanusCompare;
 import com.ethan.janus.core.compare.JanusCompareDefaultImpl;
 import com.ethan.janus.core.rollback.JanusRollback;
 import com.ethan.janus.core.rollback.JanusRollbackDefault;
+import com.ethan.janus.core.threadpool.JanusBranchThreadPoolDefaultProvider;
+import com.ethan.janus.core.threadpool.JanusBranchThreadPoolMetricsProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,5 +23,11 @@ public class JanusConfig {
     @ConditionalOnMissingBean(value = JanusCompare.class)
     public JanusCompare defaultJanusCompare() {
         return new JanusCompareDefaultImpl();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(value = JanusBranchThreadPoolMetricsProvider.class)
+    public JanusBranchThreadPoolMetricsProvider janusBranchThreadPoolMetricsProvider() {
+        return new JanusBranchThreadPoolDefaultProvider();
     }
 }

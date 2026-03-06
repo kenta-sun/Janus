@@ -1,5 +1,6 @@
-package com.ethan.janus.core.config;
+package com.ethan.janus.core.threadpool;
 
+import com.ethan.janus.core.config.JanusConfigProperties;
 import com.ethan.janus.core.utils.JanusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;

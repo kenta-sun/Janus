@@ -42,6 +42,9 @@ public class JanusConfigProperties {
     // 异步比对的线程池配置
     private ThreadPoolProperty janusCompareThreadPool;
 
+    // 异步比对限流 相关配置项
+    private AsyncCompareThrottling asyncCompareThrottling = new AsyncCompareThrottling();
+
     /**
      * 总开关是否关闭
      */
@@ -95,6 +98,19 @@ public class JanusConfigProperties {
                 }
             }
             return null;
+        }
+    }
+
+    // 异步比对限流 相关配置项
+    @Data
+    public static class AsyncCompareThrottling {
+        // 异步比对限流是否开启。默认开启
+        private Boolean isOpen = Boolean.TRUE;
+        // 异步比对限流比例。默认 0.8，即 janusBranchThreadPool 的队列占用率到80%，就开始限制流量超过平均值的方法的流量
+        private Double limitRatio = 0.8;
+
+        public boolean isClosed() {
+            return !this.isOpen;
         }
     }
 }

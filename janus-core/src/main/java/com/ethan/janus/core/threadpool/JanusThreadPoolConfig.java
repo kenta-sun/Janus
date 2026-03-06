@@ -1,4 +1,4 @@
-package com.ethan.janus.core.config;
+package com.ethan.janus.core.threadpool;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

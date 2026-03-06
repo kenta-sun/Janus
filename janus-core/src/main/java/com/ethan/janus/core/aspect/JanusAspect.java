@@ -15,6 +15,7 @@ import com.ethan.janus.core.lifecycle.LifecycleDecoratorManager;
 import com.ethan.janus.core.manager.JanusCompareManager;
 import com.ethan.janus.core.manager.JanusPluginManager;
 import com.ethan.janus.core.plugin.JanusPlugin;
+import com.ethan.janus.core.threadpool.JanusBranchThreadPoolMetricsProvider;
 import com.ethan.janus.core.utils.JanusLogUtils;
 import com.ethan.janus.core.utils.JanusUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -64,9 +66,13 @@ public class JanusAspect {
     private JanusExpressionEvaluator janusExpressionEvaluator;
     @Autowired
     private TransactionTemplate transactionTemplate;
+    @Autowired
+    private JanusBranchThreadPoolMetricsProvider janusBranchThreadPoolMetricsProvider;
 
     // 缓存忽略字段
     private final Map<Method, Set<String>> ignoreFieldPathsMap = new ConcurrentHashMap<>();
+    // 统计当前时间点，每个异步执行compareBranch的方法的流量。每次进入本切面，数字加1；异步比对完成后，数字减1。
+    private final Map<Method, AtomicInteger> methodCountMap = new ConcurrentHashMap<>();
 
     @Around("@annotation(janus)")
     public Object janusAspect(ProceedingJoinPoint joinPoint, Janus janus) throws Throwable {
@@ -152,6 +158,9 @@ public class JanusAspect {
         /* 分流 */
         context.getLifecycle().switchBranch(context);
 
+        /* 统计当前方法的流量 */
+        this.countAsyncCompareBranchMethod(context, method);
+
         /* 根据场景，在主线程中，选择分支代码执行 */
         if (CompareType.hasRollback(compareType)) {
             // 开启一个总事务，让2个分支在一个事务中，尽量在事务层面保持数据一致
@@ -188,7 +197,7 @@ public class JanusAspect {
 
         /* 比对 */
         // 处理比对流程
-        this.handleCompare(context);
+        this.handleCompare(context, method);
 
         /* 返回结果 */
         if (context.getMasterBranch().getException() != null) {
@@ -205,15 +214,21 @@ public class JanusAspect {
     /**
      * 处理比对流程，需要判断是否比对，如何比对等问题，以及
      */
-    private void handleCompare(JanusContextImpl context) {
+    private void handleCompare(JanusContextImpl context, Method method) {
         try {
+            // 如果不比对，则直接返回
             if (context.isNotCompare()) {
-                // 不比对，直接返回
                 return;
             }
+
             switch (context.getCompareType()) {
                 // 异步比对
                 case ASYNC_COMPARE:
+                    // 如果当前方法已经积压太多的比对任务，则丢弃当前的比对任务
+                    if (this.shouldThrottle(method)) {
+                        return;
+                    }
+                    // 异步执行 compareBranch，然后比对2个分支的结果
                     janusBranchThreadPool.execute(() -> this.executeCompareBranchThenCompare(context));
                     break;
                 // 同步比对
@@ -364,5 +379,96 @@ public class JanusAspect {
         // 合并
         methodPluginList.addAll(globalPluginList);
         return methodPluginList;
+    }
+
+
+    /**
+     * 统计当前方法的流量
+     *
+     * @param context 上下文
+     * @param method  切点方法
+     */
+    private void countAsyncCompareBranchMethod(JanusContextImpl context, Method method) {
+        try {
+            // 校验开关
+            if (janusConfigProperties.getAsyncCompareThrottling().isClosed()) {
+                return;
+            }
+            // 异步执行比对分支，且需要比对时，才统计
+            if (CompareType.isAsyncCompareBranch(context.getCompareType()) && context.isCompare()) {
+                this.getLongAdder(method).incrementAndGet();
+            }
+        } catch (Throwable e) {
+            // 统计报错不影响主分支
+            log.error(
+                    "[Janus] {} [methodId:{}] [businessKey:{}] [lifecycle:countAsyncCompareBranchMethod] >> exception=",
+                    JanusLogUtils.FAIL_ICON,
+                    context.getMethodId(),
+                    context.getBusinessKey(),
+                    e
+            );
+        }
+    }
+
+    /**
+     * 获取当前切点方法的正在 JanusAspect 中异步比对的数量计数器
+     *
+     * @param method 切点方法
+     * @return 正在 JanusAspect 中异步比对的数量计数器
+     */
+    private AtomicInteger getLongAdder(Method method) {
+        // ConcurrentHashMap 配合 computeIfAbsent 可以保证线程安全
+        return methodCountMap.computeIfAbsent(method, k -> new AtomicInteger(0));
+    }
+
+    /**
+     * 是否应该限流
+     */
+    private boolean shouldThrottle(Method method) {
+        // 校验开关
+        if (janusConfigProperties.getAsyncCompareThrottling().isClosed()) {
+            return false;
+        }
+
+        // 只有线程池有压力时才进行限流判定，保证性能且不干扰正常扩容
+        if (!this.isHighPressure()) {
+            return false;
+        }
+
+        // 当前方法的流量
+        int currentMethodCount;
+        AtomicInteger atomicInteger = methodCountMap.get(method);
+        if (atomicInteger == null) {
+            currentMethodCount = 0;
+        } else {
+            currentMethodCount = atomicInteger.get();
+        }
+
+        // 流量太少，不需要做复杂判断，直接进行比对
+        if (currentMethodCount < 10) {
+            return false;
+        }
+
+        Collection<AtomicInteger> values = methodCountMap.values();
+        int totalCount = values.stream().mapToInt(AtomicInteger::get).sum(); // 当前总数量
+        int activeMethodsNum = values.size(); // 当前切面处理过的异步执行compareBranch的总方法数
+        long average = totalCount / activeMethodsNum; // 每个方法的平均流量
+
+        // 如果当前方法并发数超过平均值，则触发限流
+        return currentMethodCount > average;
+    }
+
+    /**
+     * 判断线程池是否处于高压状态
+     */
+    public boolean isHighPressure() {
+        // 队列当前 size
+        int currentSize = janusBranchThreadPoolMetricsProvider.getQueueSize(janusBranchThreadPool);
+        // 队列总 size
+        int capacity = janusBranchThreadPoolMetricsProvider.getQueueCapacity(janusBranchThreadPool);
+        // 占用比例
+        double usageRatio = (double) currentSize / capacity;
+        // 阈值默认 0.8
+        return usageRatio > janusConfigProperties.getAsyncCompareThrottling().getLimitRatio();
     }
 }
