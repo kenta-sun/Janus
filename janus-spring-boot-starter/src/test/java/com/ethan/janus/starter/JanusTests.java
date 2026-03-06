@@ -14,8 +14,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.HashMap;
@@ -25,7 +23,7 @@ import java.util.stream.Stream;
 /**
  * Janus 框架功能测试
  */
-@SpringBootTest
+@SpringBootTest(classes = JanusTestApplication.class)
 public class JanusTests {
 
     @Autowired
@@ -38,12 +36,6 @@ public class JanusTests {
     private JdbcTemplate jdbcTemplate;
 
     public static PluginRes pluginRes;
-
-    @TestConfiguration
-    @EnableAspectJAutoProxy(proxyTargetClass = true)
-    static class TestConfig {
-        // 这里无需写 Bean 方法，保持空即可
-    }
 
     static Stream<Arguments> testSyncCompareDataProvider() {
         return Stream.of(
