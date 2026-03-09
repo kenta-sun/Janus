@@ -487,7 +487,12 @@ public class JanusAspect {
         int activeMethodsNum = values.size(); // 当前切面处理过的异步执行compareBranch的总方法数
         int average = totalCount / activeMethodsNum; // 每个方法的平均流量
 
-        // 如果当前方法并发数超过平均值，则触发限流
+        /*
+         * 如果当前方法并发数等于或超过平均值，则触发限流。
+         * 必须是大于等于，缺少等于会导致以下场景判断失效：
+         * 1. 只有一个接口的场景。
+         * 2. 所有接口的流量都完全一样的极端场景。
+         */
         return currentMethodCount >= average;
     }
 
