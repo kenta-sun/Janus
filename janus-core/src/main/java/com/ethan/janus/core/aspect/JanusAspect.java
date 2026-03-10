@@ -235,6 +235,7 @@ public class JanusAspect {
                 // 同步比对
                 case SYNC_COMPARE:
                     this.executeCompareBranchThenCompare(context);
+                    break;
                 case SYNC_ROLLBACK_ONE_COMPARE:
                 case SYNC_ROLLBACK_ALL_COMPARE:
                     // 该场景下，compareBranch 已经执行完，所以直进行比对
