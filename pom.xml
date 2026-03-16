@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!-- 父项目基础坐标：统一管理子模块版本与依赖策略 -->
-    <groupId>com.ethan</groupId>
+    <groupId>com.eredar</groupId>
     <artifactId>janus-parent</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
@@ -50,7 +50,7 @@
             </dependency>
             <!-- Janus 核心模块版本：供 starter 或其他模块引用 -->
             <dependency>
-                <groupId>com.ethan</groupId>
+                <groupId>com.eredar</groupId>
                 <artifactId>janus-core</artifactId>
                 <version>${janus.version}</version>
             </dependency>

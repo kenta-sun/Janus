@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.ethan</groupId>
+        <groupId>com.eredar</groupId>
         <artifactId>janus-parent</artifactId>
         <version>${revision}</version>
     </parent>
@@ -16,7 +16,7 @@
     <dependencies>
         <!-- Janus 核心框架 -->
         <dependency>
-            <groupId>com.ethan</groupId>
+            <groupId>com.eredar</groupId>
             <artifactId>janus-core</artifactId>
         </dependency>
         <!-- Spring Context：@Component、ApplicationContext 等 -->

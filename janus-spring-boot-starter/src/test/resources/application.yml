@@ -9,5 +9,5 @@ janus:
 logging:
   level:
     com:
-      ethan:
+      eredar:
         janus: DEBUG
