@@ -10,4 +10,4 @@ logging:
   level:
     com:
       eredar:
-        janus: DEBUG
+        janus: TRACE
