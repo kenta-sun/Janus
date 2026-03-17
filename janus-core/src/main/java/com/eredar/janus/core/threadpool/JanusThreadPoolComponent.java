@@ -19,7 +19,7 @@ public class JanusThreadPoolComponent {
     private JanusConfigProperties janusConfigProperties;
 
     /**
-     * 创建执行比对分支的原始线程池
+     * 创建执行比对分支的线程池
      */
     public ExecutorService getJanusBranchThreadPool() {
         /* 线程工厂 */
@@ -45,7 +45,7 @@ public class JanusThreadPoolComponent {
     }
 
     /**
-     * 创建执行比对分支的原始线程池
+     * 创建比对线程池
      */
     public ExecutorService getJanusCompareThreadPool() {
         /* 线程工厂 */

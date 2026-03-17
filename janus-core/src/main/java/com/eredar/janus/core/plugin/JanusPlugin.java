@@ -41,14 +41,14 @@ public interface JanusPlugin {
     }
 
     /**
-     * primary 方法执行前
+     * primary 分支执行前
      */
     default void beforePrimaryExecute(JanusContext context) {
         // 默认空实现
     }
 
     /**
-     * primary 方法执行后
+     * primary 分支执行后
      * <p>可以用于查询落表结果
      */
     default void afterPrimaryExecute(JanusContext context) {
@@ -56,14 +56,14 @@ public interface JanusPlugin {
     }
 
     /**
-     * secondary 方法执行前
+     * secondary 分支执行前
      */
     default void beforeSecondaryExecute(JanusContext context) {
         // 默认空实现
     }
 
     /**
-     * secondary 方法执行后
+     * secondary 分支执行后
      * <p>可以用于查询落表结果
      */
     default void afterSecondaryExecute(JanusContext context) {
