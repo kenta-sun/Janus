@@ -30,6 +30,7 @@ public class PrimaryService implements TestInterface {
             businessKey = "#request.key",
             plugins = {AsyncSwitchJanusPlugin.class, CountCompareJanusPlugin.class}
     )
+    @Override
     public TestResponse testAsyncCompare1(TestRequest request) {
         return TestResponse.builder()
                 .number(0)

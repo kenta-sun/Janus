@@ -1,22 +1,136 @@
-# Janus
+# Janus框架简介
 
-分流比对框架。
+Janus框架为<font color=#FF0000 >分流比对框架</font>，主要用于项目重构场景。
 
-# 主要功能简介
+重构项目时需要重构一个个具体的java方法。该框架可以从下面3个方面辅助重构到上线的流程：
+
+1. 强制要求以接口的方式统一新旧方法的定义，方便调用、切换新老方法或者进行新老方法之间的比对。
+2. Janus框架的分流功能，可以方便开发者从多个维度灵活判断、切换新老方法。生产环境发现新方法有bug时，该功能在还可以帮助开发者方便的切换回老方法。具体的判断、切换逻辑需要开发者根据业务场景自己实现（通过自定义[插件](#jump-target-plugin)）。
+3. Janus框架的比对功能，可以方便开发者在生产环境并行新旧方法，并对新旧方法的运行结果进行异步比对。有多种模式供开发者选择，以适配非事务方法和事务方法。如果比对事务方法（方法内有修改数据库的逻辑），需要通过自定义[插件](#jump-target-plugin)来查询方法内修改过的数据（包括对数据库的增删改），否则框架无法对修改的数据进行比对。
+
+## Janus框架实现思路
+
+### 基于 Spring AOP
+
+该框架基于Spring框架的AOP功能实现。在切面中决定返回新方法的结果还是旧方法的结果，并比对他们的结果是否一致。这样做对代码的入侵性较低，并切可以方便的控制新旧方法的切换、记录比对发现的差异。
+
+### 分流比对过程的生命周期
+
+将分流、比对的整个流程中，关键的步骤抽象成生命周期，用装饰模式实现功能增强。
+
+详情见[Janus框架生命周期](#jump-target-lifecycle)。
+
+### 基于生命周期增强实现的插件功能
+
+生命周期不对框架的使用者开放，仅用于框架作者自己实现Janus框架的一些核心功能。
+
+基于生命周期实现的[插件](#jump-target-plugin)功能，可以允许框架使用者来自定义插件，灵活的添加各种功能。
+
+### 部分关键的全局功能允许用户自定义
+
+[部分全局功能允许开发者自定义](#jump-target-custom)。这些功能都提供了接口，并且默认的Bean都设置了`@ConditionalOnMissingBean`，允许用户根据需要自己定义这些功能。
+
+基于约定优于配置的原则，一般情况下使用Janus框架的默认实现即可。
+
+
+# 主要功能
+
+## 接口定义
+
+采用Janus框架，首先必须用接口统一新旧方法的格式，示例如下。
+
+将要重构的方法定义在接口中：
+
+```java
+public interface TestInterface {
+
+    TestResponse testMethod(TestRequest request);
+}
+```
+
+实现`TestInterface`接口，将新方法（重构后的方法）作为**primary**分支，并添加`@Janus`注解。
+
+<font color=#FF0000 >【注意】</font> 新方法所在的**Service**必须添加Spring框架的`@Primary`注解。这样在注入`TestInterface`接口时才能自动注入`PrimaryService`的Bean。
+
+```java
+@Primary
+@Service
+public class PrimaryService implements TestInterface {
+
+    @Janus(
+            methodId = "testMethod",
+            compareType = CompareType.ASYNC_COMPARE,
+            businessKey = "#request.key"
+    )
+    @Override
+    public TestResponse testMethod(TestRequest request) {
+        // ......
+    }
+}
+```
+
+实现`TestInterface`接口，将旧方法作为**secondary**分支。
+
+<font color=#FF0000 >【注意】</font> 旧方法所在的**Service**必须添加Janus框架的`@Secondary`注解。这样Janus框架才能找到**secondary**分支。
+
+```java
+@Secondary
+@Service
+public class SecondaryService implements TestInterface {
+
+    @Override
+    public TestResponse testMethod(TestRequest request) {
+        // ......
+    }
+}
+```
+
 
 ## 分流
 
-主次分支路由。
+按照上面的接口定义方式，Janus框架必须决定返回哪个分支的结果。
 
-## 多种比对模式
+开发者可以通过自定义[插件](#jump-target-plugin)，自己实现插件的`switchBranch`方法，在该方法中设置`JanusContext`的`masterBranchName`属性，即可自定义分流规则。示例如下：
+
+```java
+@Component
+public class SwitchJanusPlugin implements JanusPlugin {
+
+    @Override
+    public void switchBranch(JanusContext context) {
+        // ......
+        context.setMasterBranchName(JanusConstants.PRIMARY);
+        // 或者
+        context.setMasterBranchName(JanusConstants.SECONDARY);
+    }
+}
+```
+
+### 允许自定义所有方法默认返回的分支
+
+如果未通过[插件](#jump-target-plugin)来自定义分流规则，默认返回**secondary**分支的结果。
+
+该规则可以通过配置文件修改为**primary**。
+
+```yml
+janus:
+  # 未配置具体分流开关时默认使用哪个分支。默认：secondary
+  # 可选值：primary (新分支), secondary (老分支)
+  default-master-branch: primary
+```
+
+
+## 比对
 
 ### 比对模式简介
 
-- DO_NOT_COMPARE: 只执行主分支，不比对
-- SYNC_COMPARE: 同步执行2个分支，然后比对
-- ASYNC_COMPARE: 异步执行比对分支，然后比对
-- SYNC_ROLLBACK_ONE_COMPARE: 同步执行2个分支，回滚比对分支的事务，然后比对
-- SYNC_ROLLBACK_ALL_COMPARE: 同步执行2个分支，回滚2个分支的事务，然后比对
+可以通过`@Janus`注解的`compareType`来选择比对模式：
+
+- **DO_NOT_COMPARE**: 只执行主分支，不比对
+- **SYNC_COMPARE**: 同步执行2个分支，然后比对
+- **ASYNC_COMPARE:** 异步执行比对分支，然后比对
+- **SYNC_ROLLBACK_ONE_COMPARE**: 同步执行2个分支，回滚比对分支的事务，然后比对
+- **SYNC_ROLLBACK_ALL_COMPARE**: 同步执行2个分支，回滚2个分支的事务，然后比对
 
 ### 比对模式选择
 
@@ -26,6 +140,22 @@
    - `SYNC_ROLLBACK_ONE_COMPARE`模式可以用于正式上线生产环境的事务方法，但是要注意选对正确的主分支`masterBranch`。
 3. `SYNC_COMPARE`模式一般用不到，如果特殊情况下需要可以使用。
 4. 如果想关闭比对功能，选择`DO_NOT_COMPARE`模式。
+
+```java
+@Janus(
+        methodId = "testMethod",
+        compareType = CompareType.ASYNC_COMPARE,
+        businessKey = "#request.key"
+)
+```
+
+如果未指定`compareType`，默认为`ASYNC_COMPARE`。也可以通过配置文件修改默认选项。
+
+```yml
+janus:
+  # 默认比对类型。默认：ASYNC_COMPARE (异步比对)
+  default-compare-type: SYNC_COMPARE
+```
 
 ### 唯一键
 
@@ -84,7 +214,7 @@ public class JanusRollbackClearCacheImpl implements JanusRollbackClearCache {
 }
 ```
 
-### 自定义执行比对分支的线程池`janusBranchThreadPool`
+### 自定义执行比对分支的线程池<span id="jump-target-janusBranchThreadPool">`janusBranchThreadPool`</span>
 
 该线程用于`ASYNC_COMPARE`模式下，异步执行比对分支。
 
@@ -107,15 +237,15 @@ janus:
     keep-alive-time: 60
     # 时间单位
     # 可选值: NANOSECONDS, MICROSECONDS, MILLISECONDS, SECONDS, MINUTES, HOURS, DAYS
-    unit: "SECONDS"
+    unit: SECONDS
     # 队列大小
     work-queue-size: 1000
     # 拒绝策略
     # 可选值: CallerRunsPolicy, AbortPolicy, DiscardPolicy, DiscardOldestPolicy
-    rejected-handler: "CallerRunsPolicy"
+    rejected-handler: CallerRunsPolicy
 ```
 
-### 自定义异步比对线程池`janusCompareThreadPool`
+### 自定义异步比对线程池<span id="jump-target-janusCompareThreadPool">`janusCompareThreadPool`</span>
 
 该线程池用于异步执行比对2个分支的结果的逻辑。
 
@@ -137,15 +267,12 @@ janus:
     # 线程存活时间
     keep-alive-time: 30
     # 时间单位 (可选值: NANOSECONDS, MICROSECONDS, MILLISECONDS, SECONDS, MINUTES, HOURS, DAYS)
-    unit: "SECONDS"
+    unit: SECONDS
     # 队列大小
     work-queue-size: 500
     # 拒绝策略 (可选值: CallerRunsPolicy, AbortPolicy, DiscardPolicy, DiscardOldestPolicy)
-    rejected-handler: "AbortPolicy"
+    rejected-handler: AbortPolicy
 ```
-
-
-## 比对功能优化点
 
 ### 支持在比对时忽略指定字段
 
@@ -193,7 +320,7 @@ janus:
 
 ## Janus生命周期与插件
 
-### Janus 框架生命周期
+### <span id="jump-target-lifecycle">Janus框架生命周期</span>
 
 Janus框架的整个分流比对过程，分为4个生命周期：
 
@@ -202,7 +329,7 @@ Janus框架的整个分流比对过程，分为4个生命周期：
 3. 执行`secondary`分支：secondaryExecute
 4. 比对：compare
 
-### 插件简介
+### <span id="jump-target-plugin">插件</span>
 
 根据Janus框架4个生命周，可以添加插件来实现各种自定义的扩展功能，比如日志记录等。
 
@@ -313,6 +440,49 @@ public TestResponse testMethod(TestRequest request) {
 @Component
 public class GlobalJanusPlugin implements JanusPlugin {
     // ......
+}
+```
+
+## <span id="jump-target-custom">允许用户自定义的功能</span>
+
+以下功能都提供了接口，并且框架提供的Bean都设置了`@ConditionalOnMissingBean`，允许用户根据需要自己定义这些功能。
+
+一般情况下使用Janus框架的默认实现即可。
+
+- `JanusCompare`接口：实现该接口可以自己定义比对功能。
+- `JanusRollback`接口：实现该接口可以自己定义事务回滚功能。
+- `janusBranchThreadPoolMetricsProvider`接口：如果开发者使用了自己定义的线程池，并且线程池的实现不是`ThreadPoolExecutor`类型，则需要开发者自己实现该接口，用来提供线程池的队列的相关数据。该接口有2个抽象方法，`getQueueSize`方法用于获取线程池队列信息当前的size；`getQueueCapacity`方法用户获取线程池队列的最大容量（可以不用很精确）。
+
+Janus框架中用到的2个线程池，都允许使用者自己注入：
+
+- [`janusBranchThreadPool`](#jump-target-janusBranchThreadPool)
+- [`janusCompareThreadPool`](#jump-target-janusCompareThreadPool)
+
+也可以使用`JanusThreadPoolComponent`来获取框架提供的线程池，自己做增强操作后再注入Spring。
+
+这样既能增强线程池，又能保留在配置文件中配置线程池属性的效果，并且十分方便。
+
+示例：
+
+```java
+@Configuration
+public class ThreadPoolConfig {
+
+    @Autowired
+    private JanusThreadPoolComponent janusThreadPoolComponent;
+
+    @Bean
+    public ExecutorService janusBranchThreadPool() {
+        // 创建原始线程池
+        ExecutorService janusBranchThreadPool = janusThreadPoolComponent.getJanusBranchThreadPool();
+        // 使用 ContextAwareExecutorService 进行增强，确保父线程上下文（如数据源标识）在子线程中可用
+        return new ContextAwareExecutorService(janusBranchThreadPool)
+                .addContextPropagator(
+                        DataSourceContextHolder::getDataSource,
+                        DataSourceContextHolder::setDataSource,
+                        DataSourceContextHolder::removeDataSource
+                );
+    }
 }
 ```
 
