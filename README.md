@@ -279,7 +279,7 @@ public class JanusRollbackClearCacheImpl implements JanusRollbackClearCache {
 }
 ```
 
-### 自定义执行比对分支的线程池<span id="jump-target-janusBranchThreadPool">`janusBranchThreadPool`</span>
+### <span id="jump-target-janusBranchThreadPool">自定义执行比对分支的线程池`janusBranchThreadPool`</span>
 
 该线程池用于`ASYNC_COMPARE`模式下，异步执行比对分支。
 
