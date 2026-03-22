@@ -701,9 +701,9 @@ graph TD
     N -- SYNC_COMPARE --> R[当前线程同步执行:<br/>执行比对分支]
     R --> S
     
-    N -- SYNC_ROLLBACK_ONE_COMPARE<br/>SYNC_ROLLBACK_ALL_COMPARE --> S
+    N -- "SYNC_ROLLBACK_ONE_COMPARE<br/>SYNC_ROLLBACK_ALL_COMPARE" --> S
     
-    S[比对2个分支的运行结果：<br/>compare]
+    S[比对2个分支的运行结果:<br/>compare]
 
     S --> U
     
