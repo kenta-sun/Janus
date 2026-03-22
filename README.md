@@ -669,39 +669,42 @@ Janus框架面对的使用场景，非常容易遇到根据当前业务进行功
 
 ```mermaid
 graph TD
-    A([AOP 切面拦截 @Janus 方法]) --> B{全局开关是否关闭?}
+    A([AOP 切面拦截 @Janus 方法]) --> B{全局开关是否开启?}
     
-    B -- 是 --> C[直接执行原方法 joinPoint.proceed]
+    B -- 否 --> C[直接执行原方法 joinPoint.proceed]
     C --> Z([返回结果, 流程结束])
     
-    B -- 否 --> D[解析注解并构建上下文 JanusContext<br/>提取插件、比对类型、业务主键等]
+    B -- 是 --> D[解析注解并构建上下文 JanusContext<br/>提取插件、比对类型、业务主键等]
     
-    D --> E[触发插件生命周期: switchBranch]
-    E --> F[当前方法流量计数 +1 <br/>用于防雪崩及限流判断]
+    D --> E[分流判断，选择主分支 switchBranch]
+    E --> F[当前方法流量计数 +1 <br/>用于限流判断]
     
-    F --> G{比对类型是否包含<br/>回滚语义 Rollback?}
+    F --> G{比对类型是否属于<br/>事务场景?}
     
-    G -- 是 --> H[开启 Spring 事务 transactionTemplate]
-    H --> I[先执行比对分支代码 compareBranch]
-    I --> J[后执行主分支代码 masterBranch]
-    J --> K[提交或标记回滚事务]
+    G -- 是 --> H[开启事务 transactionTemplate]
+    H --> I[先执行比对分支 compareBranch]
+    I --> J[后执行主分支 masterBranch]
+    J --> K[同步 rollback-only 状态]
     K --> M[进入比对处理阶段 handleCompare]
     
-    G -- 否 --> L[仅在主线程执行主分支代码 masterBranch]
+    G -- 否 --> L[主线程仅执行主分支 masterBranch]
     L --> M
     
     M --> N{判断比对类型 CompareType}
     
     N -- ASYNC_COMPARE --> O{是否触发高压限流?}
     O -- 是 --> P[丢弃比对任务, 流量计数 -1]
-    O -- 否 --> Q[投递到异步线程池:<br/>执行比对分支并比对结果]
+    O -- 否 --> Q[janusBranchThreadPool线程池任务添加新任务:执行比对分支]
     P --> U
-    Q --> U
+    Q --> S
     
-    N -- SYNC_COMPARE --> R[当前线程同步执行:<br/>执行比对分支并比对结果]
-    R --> U
+    N -- SYNC_COMPARE --> R[当前线程同步执行:<br/>执行比对分支]
+    R --> S
     
-    N -- SYNC_ROLLBACK_* --> S[直接比对两分支结果<br/>比对分支已在上方事务中执行]
+    N -- SYNC_ROLLBACK_ONE_COMPARE<br/>SYNC_ROLLBACK_ALL_COMPARE --> S
+    
+    S[比对2个分支的运行结果：<br/>compare]
+
     S --> U
     
     N -- DO_NOT_COMPARE --> T[跳过比对操作]
