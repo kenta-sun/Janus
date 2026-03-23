@@ -723,7 +723,15 @@ Janus框架面对的使用场景，非常容易遇到根据当前业务进行功
    - 实现方式：使用一个全局唯一的`ConcurrentHashMap`来记录每个方法对线程池的占用情况。该记录是动态的，每次切面进入，对应的方法+1；每次切面中的异步执行比对分支的操作结束，对应的方法-1。只要判断线程池压力过大，则先通过该map来计算当前所有方法的平均流量，然后获取当前方法的流量进行比较。注意，只要当前方法的流量**大于等于**平均流量即可判定需要限流，这样做可以避免只有1个方法有流量时无法触发限流的问题。
    - 详情见`JanusAspect`的`shouldThrottle(Method method)`方法。
 
-### 流程图
+### 获取动态代理对象的target的工具方法
+
+`JanusAopUtils`工具类可用于获取动态代理对象的target，或者target的类型。
+
+### 基于Spring框架实现对SpEL表达式的支持
+
+`JanusExpressionEvaluator`继承Spring框架的`CachedExpressionEvaluator`，并自定义缓存`expressionCache`来实现解析、缓存SpEL表达式的效果。
+
+## 流程图
 
 ```mermaid
 graph TD
