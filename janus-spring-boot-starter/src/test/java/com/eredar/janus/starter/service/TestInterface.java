@@ -18,4 +18,8 @@ public interface TestInterface {
     TestResponse testIgnore();
 
     void testCompareThrottling(TestRequest request);
+
+    void janusAspectStatus1(TestRequest request);
+
+    void janusAspectStatus2(TestRequest request);
 }

@@ -5,6 +5,7 @@ public class JanusConstants {
     /* ---------- 分支名称 start ---------- */
     public static final String PRIMARY = "primary"; // 主分支
     public static final String SECONDARY = "secondary"; // 次要分支
+    public static final String NULL = "null"; // 表示没有分流结果，用于向外界传递 JanusAspect 的分流情况
     /* ---------- 分支名称 end ---------- */
 
     /* ---------- 比对结果状态 start ---------- */

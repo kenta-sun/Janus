@@ -62,7 +62,7 @@ public class JanusContextImpl implements JanusContext {
     // 比对分支运行完后，比对2个分支的结果的过程是否异步执行。默认是异步执行
     private Boolean isAsyncCompare;
 
-    // 主分支，只允许设置1次，不能随意修改该属性
+    // 主分支名，只允许设置1次，不能随意修改该属性
     @Getter
     private String masterBranchName;
 

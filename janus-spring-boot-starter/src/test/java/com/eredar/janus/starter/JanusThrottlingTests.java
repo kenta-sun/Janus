@@ -4,6 +4,7 @@ import com.eredar.janus.core.utils.JanusJsonUtils;
 import com.eredar.janus.starter.dto.PluginRes;
 import com.eredar.janus.starter.dto.TestRequest;
 import com.eredar.janus.starter.service.TestInterface;
+import com.eredar.janus.starter.utils.TestUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,7 +13,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.Stream;
@@ -64,9 +64,6 @@ public class JanusThrottlingTests {
         Assertions.assertTrue(longAdder.longValue() < 15);
 
         /* 校验结果 */
-        Map<String, String> compareResMap = JanusJsonUtils.compareObj(pluginRes, expected);
-        if (!compareResMap.isEmpty()) {
-            Assertions.fail(JanusJsonUtils.writeValueAsString(compareResMap));
-        }
+        TestUtils.assertEquals(pluginRes, expected);
     }
 }

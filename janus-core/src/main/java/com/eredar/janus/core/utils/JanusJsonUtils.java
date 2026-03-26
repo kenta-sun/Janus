@@ -103,6 +103,9 @@ public class JanusJsonUtils {
      * @return 差异Map，Key 为路径，Value 为差异描述。如果 Map 为空表示一致。
      */
     public static Map<String, String> compareObj(Object actual, Object expect, Set<String> ignoreFieldPaths) {
+        if (actual instanceof String && expect instanceof String) {
+            return compareJson((String) actual, (String) expect, ignoreFieldPaths);
+        }
         JsonNode actualNode = ob.valueToTree(actual);
         JsonNode expectNode = ob.valueToTree(expect);
         Map<String, String> diffMap = new LinkedHashMap<>();

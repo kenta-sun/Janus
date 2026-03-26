@@ -2,6 +2,7 @@ package com.eredar.janus.starter.service;
 
 import com.eredar.janus.core.annotation.Janus;
 import com.eredar.janus.core.constants.CompareType;
+import com.eredar.janus.core.constants.JanusConstants;
 import com.eredar.janus.starter.annotation.TestAnnotation;
 import com.eredar.janus.starter.dao.TestRollbackMapper;
 import com.eredar.janus.starter.dto.TestIgnoreDTO;
@@ -10,6 +11,7 @@ import com.eredar.janus.starter.dto.TestResponse;
 import com.eredar.janus.starter.dto.TestRollbackEntity;
 import com.eredar.janus.starter.plugins.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,9 @@ public class PrimaryService implements TestInterface {
 
     @Autowired
     private TestRollbackMapper testRollbackMapper;
+    @Lazy
+    @Autowired
+    private PrimaryService thisService;
 
     @Janus(
             methodId = "testAsyncCompare1",
@@ -219,5 +224,36 @@ public class PrimaryService implements TestInterface {
     @Override
     public void testCompareThrottling(TestRequest request) {
 
+    }
+
+    @Janus(
+            methodId = "janusAspectStatus1",
+            compareType = CompareType.ASYNC_COMPARE,
+            businessKey = "#request.key",
+            plugins = AsyncSwitchJanusPlugin.class
+    )
+    @Override
+    public void janusAspectStatus1(TestRequest request) {
+        System.err.println("执行 janusAspectStatus1 primary");
+        if (JanusConstants.PRIMARY.equals(request.getKey())) {
+            this.thisService.janusAspectStatus2(TestRequest.builder()
+                    .key(JanusConstants.SECONDARY)
+                    .build());
+        } else {
+            this.thisService.janusAspectStatus2(TestRequest.builder()
+                    .key(JanusConstants.PRIMARY)
+                    .build());
+        }
+    }
+
+    @Janus(
+            methodId = "janusAspectStatus2",
+            compareType = CompareType.ASYNC_COMPARE,
+            businessKey = "#request.key",
+            plugins = AsyncSwitchJanusPlugin.class
+    )
+    @Override
+    public void janusAspectStatus2(TestRequest request) {
+        System.err.println("执行 janusAspectStatus2 primary");
     }
 }

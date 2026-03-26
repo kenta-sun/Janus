@@ -7,6 +7,7 @@ import com.eredar.janus.starter.dto.TestRequest;
 import com.eredar.janus.starter.dto.TestResponse;
 import com.eredar.janus.starter.service.TestInterface;
 import com.eredar.janus.starter.service.TransactionalService;
+import com.eredar.janus.starter.utils.TestUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -77,10 +78,7 @@ public class JanusTests {
         Map<String, Object> actual = new HashMap<>();
         actual.put("response", response);
         actual.put("pluginRes", pluginRes);
-        Map<String, String> compareResMap = JanusJsonUtils.compareObj(actual, expected);
-        if (!compareResMap.isEmpty()) {
-            Assertions.fail(JanusJsonUtils.writeValueAsString(compareResMap));
-        }
+        TestUtils.assertEquals(actual, expected);
     }
 
 
@@ -146,10 +144,7 @@ public class JanusTests {
         Map<String, Object> actual = new HashMap<>();
         actual.put("response", response);
         actual.put("pluginRes", pluginRes);
-        Map<String, String> compareResMap = JanusJsonUtils.compareObj(actual, expected);
-        if (!compareResMap.isEmpty()) {
-            Assertions.fail(JanusJsonUtils.writeValueAsString(compareResMap));
-        }
+        TestUtils.assertEquals(actual, expected);
     }
 
     @ParameterizedTest(name = "案例 {index}: requestStr={0}")
@@ -195,10 +190,7 @@ public class JanusTests {
         Map<String, Object> actual = new HashMap<>();
         actual.put("response", response);
         actual.put("pluginRes", pluginRes);
-        Map<String, String> compareResMap = JanusJsonUtils.compareObj(actual, expected);
-        if (!compareResMap.isEmpty()) {
-            Assertions.fail(JanusJsonUtils.writeValueAsString(compareResMap));
-        }
+        TestUtils.assertEquals(actual, expected);
     }
 
 
@@ -263,10 +255,7 @@ public class JanusTests {
         Map<String, Object> actual = new HashMap<>();
         actual.put("response", response);
         actual.put("pluginRes", pluginRes);
-        Map<String, String> compareResMap = JanusJsonUtils.compareObj(actual, expected);
-        if (!compareResMap.isEmpty()) {
-            Assertions.fail(JanusJsonUtils.writeValueAsString(compareResMap));
-        }
+        TestUtils.assertEquals(actual, expected);
     }
 
     @ParameterizedTest(name = "案例 {index}: requestStr={0}")
@@ -312,10 +301,7 @@ public class JanusTests {
         Map<String, Object> actual = new HashMap<>();
         actual.put("response", response);
         actual.put("pluginRes", pluginRes);
-        Map<String, String> compareResMap = JanusJsonUtils.compareObj(actual, expected);
-        if (!compareResMap.isEmpty()) {
-            Assertions.fail(JanusJsonUtils.writeValueAsString(compareResMap));
-        }
+        TestUtils.assertEquals(actual, expected);
     }
 
 
@@ -348,9 +334,6 @@ public class JanusTests {
         pluginRes.primaryTime = null;
         Assertions.assertTrue(pluginRes.secondaryTime > 0);
         pluginRes.secondaryTime = null;
-        Map<String, String> compareResMap = JanusJsonUtils.compareObj(pluginRes, pluginResExpected);
-        if (!compareResMap.isEmpty()) {
-            Assertions.fail(JanusJsonUtils.writeValueAsString(compareResMap));
-        }
+        TestUtils.assertEquals(pluginRes, pluginResExpected);
     }
 }

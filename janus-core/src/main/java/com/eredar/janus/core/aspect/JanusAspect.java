@@ -8,6 +8,7 @@ import com.eredar.janus.core.config.JanusExpressionEvaluator;
 import com.eredar.janus.core.constants.CompareType;
 import com.eredar.janus.core.constants.JanusConstants;
 import com.eredar.janus.core.dto.BranchInfoImpl;
+import com.eredar.janus.core.dto.JanusAspectStatus;
 import com.eredar.janus.core.dto.JanusContextImpl;
 import com.eredar.janus.core.dto.PluginListDTO;
 import com.eredar.janus.core.exception.JanusException;
@@ -76,133 +77,151 @@ public class JanusAspect {
 
     @Around("@annotation(janus)")
     public Object janusAspect(ProceedingJoinPoint joinPoint, Janus janus) throws Throwable {
-        // 如果总开关关闭了，则直接执行切点方法并返回结果
-        if (janusConfigProperties.isClosed()) {
-            return joinPoint.proceed();
-        }
+        boolean isFirst = false;
+        try {
+            // 如果总开关关闭了，则直接执行切点方法并返回结果
+            if (janusConfigProperties.isClosed()) {
+                return joinPoint.proceed();
+            }
 
-        /* 组装分支信息 */
-        BranchInfoImpl primaryBranch = BranchInfoImpl.builder()
-                .branchType(JanusConstants.PRIMARY)
-                .isExecuted(false)
-                .isRollback(false)
-                .build();
-        BranchInfoImpl secondaryBranch = BranchInfoImpl.builder()
-                .branchType(JanusConstants.SECONDARY)
-                .isExecuted(false)
-                .isRollback(false)
-                .build();
+            /* 组装分支信息 */
+            BranchInfoImpl primaryBranch = BranchInfoImpl.builder()
+                    .branchType(JanusConstants.PRIMARY)
+                    .isExecuted(false)
+                    .isRollback(false)
+                    .build();
+            BranchInfoImpl secondaryBranch = BranchInfoImpl.builder()
+                    .branchType(JanusConstants.SECONDARY)
+                    .isExecuted(false)
+                    .isRollback(false)
+                    .build();
 
-        /* 切点方法对象 */
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        Method method = signature.getMethod();
+            /* 切点方法对象 */
+            MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+            Method method = signature.getMethod();
 
-        /* 插件 */
-        // 添加插件
-        PluginListDTO pluginListDTO = this.addPlugins(janus);
-        // 高优先级插件，order 小于0
-        List<JanusPlugin> higherPluginList = pluginListDTO.getHigherPluginList();
-        // 低优先级插件，order 大于0
-        List<JanusPlugin> lowerPluginList = pluginListDTO.getLowerPluginList();
+            /* 插件 */
+            // 添加插件
+            PluginListDTO pluginListDTO = this.addPlugins(janus);
+            // 高优先级插件，order 小于0
+            List<JanusPlugin> higherPluginList = pluginListDTO.getHigherPluginList();
+            // 低优先级插件，order 大于0
+            List<JanusPlugin> lowerPluginList = pluginListDTO.getLowerPluginList();
 
-        /* 比对功能具体实现 */
-        JanusCompare janusCompare = janusCompareManager.getJanusCompare(janus.compareImpl());
+            /* 比对功能具体实现 */
+            JanusCompare janusCompare = janusCompareManager.getJanusCompare(janus.compareImpl());
 
-        /* 业务数据键 */
-        String businessKey = this.getBusinessKey(janus, joinPoint, method);
+            /* 业务数据键 */
+            String businessKey = this.getBusinessKey(janus, joinPoint, method);
 
-        /* 设置比对类型 */
-        CompareType compareType;
-        if (this.isCompareTypeNull(janus.compareType())) {
-            compareType = CompareType.valueOf(janusConfigProperties.getDefaultCompareType());
-        } else {
-            compareType = janus.compareType();
-        }
+            /* 设置比对类型 */
+            CompareType compareType;
+            if (this.isCompareTypeNull(janus.compareType())) {
+                compareType = CompareType.valueOf(janusConfigProperties.getDefaultCompareType());
+            } else {
+                compareType = janus.compareType();
+            }
 
-        /* 忽略字段 */
-        Set<String> ignoreFieldPaths;
-        String[] ignoreFieldPathsArr = janus.ignoreFieldPaths();
-        if (ignoreFieldPathsArr == null || ignoreFieldPathsArr.length == 0) {
-            ignoreFieldPaths = null;
-        } else {
-            ignoreFieldPaths = ignoreFieldPathsMap.computeIfAbsent(method, k -> new HashSet<>(Arrays.asList(ignoreFieldPathsArr)));
-        }
+            /* 忽略字段 */
+            Set<String> ignoreFieldPaths;
+            String[] ignoreFieldPathsArr = janus.ignoreFieldPaths();
+            if (ignoreFieldPathsArr == null || ignoreFieldPathsArr.length == 0) {
+                ignoreFieldPaths = null;
+            } else {
+                ignoreFieldPaths = ignoreFieldPathsMap.computeIfAbsent(method, k -> new HashSet<>(Arrays.asList(ignoreFieldPathsArr)));
+            }
 
-        /* 创建上下文对象 */
-        JanusContextImpl context = JanusContextImpl.builder()
-                .joinPoint(joinPoint)
-                .lifecycle(lifecycleDecoratorManager)
-                .higherPluginList(higherPluginList)
-                .lowerPluginList(lowerPluginList)
-                .janusCompare(janusCompare)
-                .methodId(janus.methodId())
-                .businessKey(businessKey)
-                .compareType(compareType)
-                .isCompare(!(compareType == CompareType.DO_NOT_COMPARE))
-                .isAsyncCompare(janus.isAsyncCompare())
-                .primaryBranch(primaryBranch)
-                .secondaryBranch(secondaryBranch)
-                .pluginDataMap(new ConcurrentHashMap<>())
-                .ignoreFieldPaths(ignoreFieldPaths)
-                .build();
+            /* 创建上下文对象 */
+            JanusContextImpl context = JanusContextImpl.builder()
+                    .joinPoint(joinPoint)
+                    .lifecycle(lifecycleDecoratorManager)
+                    .higherPluginList(higherPluginList)
+                    .lowerPluginList(lowerPluginList)
+                    .janusCompare(janusCompare)
+                    .methodId(janus.methodId())
+                    .businessKey(businessKey)
+                    .compareType(compareType)
+                    .isCompare(!(compareType == CompareType.DO_NOT_COMPARE))
+                    .isAsyncCompare(janus.isAsyncCompare())
+                    .primaryBranch(primaryBranch)
+                    .secondaryBranch(secondaryBranch)
+                    .pluginDataMap(new ConcurrentHashMap<>())
+                    .ignoreFieldPaths(ignoreFieldPaths)
+                    .build();
 
-        log.debug(
-                "[Janus] {} [methodId:{}] [businessKey:{}] [lifecycle:Janus begin] >> compareType={}",
-                JanusLogUtils.SUCCESS_ICON,
-                context.getMethodId(),
-                context.getBusinessKey(),
-                compareType.name()
-        );
+            log.debug(
+                    "[Janus] {} [methodId:{}] [businessKey:{}] [lifecycle:Janus begin] >> compareType={}",
+                    JanusLogUtils.SUCCESS_ICON,
+                    context.getMethodId(),
+                    context.getBusinessKey(),
+                    compareType.name()
+            );
 
-        /* 分流 */
-        context.getLifecycle().switchBranch(context);
+            /* 分流 */
+            context.getLifecycle().switchBranch(context);
 
-        /* 统计当前方法的流量 */
-        this.incrementMethodCountMap(context, method);
+            /* JanusAspectSupport 初始化 */
+            // 只有当前线程第一次进入 JanusAspect，才会初始化 JanusAspectSupport
+            isFirst = JanusAspectSupport.init();
+            JanusAspectSupport.putStatus(
+                    context.getMethodId(),
+                    JanusAspectStatus.builder()
+                            .masterBranchName(context.getMasterBranchName())
+                            .build()
+            );
 
-        /* 根据场景，在主线程中，选择分支代码执行 */
-        if (CompareType.hasRollback(compareType)) {
-            // 开启一个总事务，让2个分支在一个事务中，尽量在事务层面保持数据一致
-            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-                @Override
-                protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    try {
-                        // CompareType 为 ROLLBACK 的场景下，先执行比对分支代码
-                        compareBranchExecute(context);
-                        // 执行主分支代码
-                        masterBranchExecute(context);
-                    } catch (Throwable e) {
-                        /*
-                         * 必定抛出 RuntimeException，让事务可以回滚。
-                         * 由于分支运行时已经catch了异常，所以这里一般走不进来，仅作为兜底逻辑
-                         */
-                        if (e instanceof RuntimeException) {
-                            throw e;
-                        } else {
-                            throw new RuntimeException(e);
-                        }
-                    } finally {
-                        // 同步 rollback-only 状态
-                        if (status.isRollbackOnly()) {
-                            status.setRollbackOnly();
+            /* 统计当前方法的流量 */
+            this.incrementMethodCountMap(context, method);
+
+            /* 根据场景，在主线程中，选择分支代码执行 */
+            if (CompareType.hasRollback(compareType)) {
+                // 开启一个总事务，让2个分支在一个事务中，尽量在事务层面保持数据一致
+                transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                    @Override
+                    protected void doInTransactionWithoutResult(TransactionStatus status) {
+                        try {
+                            // CompareType 为 ROLLBACK 的场景下，先执行比对分支代码
+                            compareBranchExecute(context);
+                            // 执行主分支代码
+                            masterBranchExecute(context);
+                        } catch (Throwable e) {
+                            /*
+                             * 必定抛出 RuntimeException，让事务可以回滚。
+                             * 由于分支运行时已经catch了异常，所以这里一般走不进来，仅作为兜底逻辑
+                             */
+                            if (e instanceof RuntimeException) {
+                                throw e;
+                            } else {
+                                throw new RuntimeException(e);
+                            }
+                        } finally {
+                            // 同步 rollback-only 状态
+                            if (status.isRollbackOnly()) {
+                                status.setRollbackOnly();
+                            }
                         }
                     }
-                }
-            });
-        } else {
-            // 没有 ROLLBACK 场景，仅运行主分支代码
-            this.masterBranchExecute(context);
-        }
+                });
+            } else {
+                // 没有 ROLLBACK 场景，仅运行主分支代码
+                this.masterBranchExecute(context);
+            }
 
-        /* 比对 */
-        // 处理比对流程
-        this.handleCompare(context, method);
+            /* 比对 */
+            // 处理比对流程
+            this.handleCompare(context, method);
 
-        /* 返回结果 */
-        if (context.getMasterBranch().getException() != null) {
-            throw context.getMasterBranch().getException();
-        } else {
-            return context.getMasterBranch().getBranchRes().getRes();
+            /* 返回结果 */
+            if (context.getMasterBranch().getException() != null) {
+                throw context.getMasterBranch().getException();
+            } else {
+                return context.getMasterBranch().getBranchRes().getRes();
+            }
+        } finally {
+            // 第一次进入 JanusAspect 时，必须在重置 isFirst属性
+            if (isFirst) {
+                JanusAspectSupport.resetIsFirst();
+            }
         }
     }
 
@@ -500,7 +519,7 @@ public class JanusAspect {
     /**
      * 判断线程池是否处于高压状态
      */
-    public boolean isHighPressure() {
+    private boolean isHighPressure() {
         // 队列当前 size
         int currentSize = janusBranchThreadPoolMetricsProvider.getQueueSize(janusBranchThreadPool);
         // 队列总 size
