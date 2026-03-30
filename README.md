@@ -460,7 +460,7 @@ public class QueryDataJanusPlugin implements JanusPlugin {
 
 插件默认优先级为最高优先级，最先进入，最后结束。
 
-```yml
+```java
 @Component
 public class TestJanusPlugin implements JanusPlugin {
 
