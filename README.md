@@ -379,6 +379,8 @@ public class TestDTO {
 
 `compareImpl`属性默认为`JanusCompareDefaultImpl.class`，由Janus框架提供。默认实现可以满足大多数场景。
 
+可以自定义多个比对逻辑，每个方法都可以配置不同的比对逻辑。
+
 新建自定义比对实现：
 
 ```java
