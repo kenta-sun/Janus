@@ -64,12 +64,6 @@ public class JanusAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(value = JanusCompare.class)
-    public JanusCompare defaultJanusCompare() {
-        return new JanusCompareDefaultImpl();
-    }
-
-    @Bean
     @ConditionalOnMissingBean(value = JanusBranchThreadPoolMetricsProvider.class)
     public JanusBranchThreadPoolMetricsProvider janusBranchThreadPoolMetricsProvider() {
         return new JanusBranchThreadPoolDefaultProvider();
@@ -113,6 +107,11 @@ public class JanusAutoConfiguration {
     @Bean
     public LifecycleDecoratorManager lifecycleDecoratorManager() {
         return new LifecycleDecoratorManager();
+    }
+
+    @Bean
+    public JanusCompare defaultJanusCompare() {
+        return new JanusCompareDefaultImpl();
     }
 
     @Bean
