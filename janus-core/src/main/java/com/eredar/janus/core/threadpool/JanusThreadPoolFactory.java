@@ -11,6 +11,9 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 线程池工厂
+ */
 public class JanusThreadPoolFactory {
 
     @Autowired
