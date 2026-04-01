@@ -15,7 +15,7 @@ import com.eredar.janus.core.rollback.JanusRollback;
 import com.eredar.janus.core.rollback.JanusRollbackDefault;
 import com.eredar.janus.core.threadpool.JanusBranchThreadPoolDefaultProvider;
 import com.eredar.janus.core.threadpool.JanusBranchThreadPoolMetricsProvider;
-import com.eredar.janus.core.threadpool.JanusThreadPoolComponent;
+import com.eredar.janus.core.threadpool.JanusThreadPoolFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -41,20 +41,20 @@ public class JanusAutoConfiguration {
     }
 
     @Bean
-    public JanusThreadPoolComponent janusThreadPoolComponent() {
-        return new JanusThreadPoolComponent();
+    public JanusThreadPoolFactory janusThreadPoolFactory() {
+        return new JanusThreadPoolFactory();
     }
 
     @Bean(name = "janusBranchThreadPool")
     @ConditionalOnMissingBean(name = "janusBranchThreadPool")
-    public ExecutorService janusBranchThreadPool(JanusThreadPoolComponent janusThreadPoolComponent) {
-        return janusThreadPoolComponent.getJanusBranchThreadPool();
+    public ExecutorService janusBranchThreadPool(JanusThreadPoolFactory janusThreadPoolFactory) {
+        return janusThreadPoolFactory.getJanusBranchThreadPool();
     }
 
     @Bean(name = "janusCompareThreadPool")
     @ConditionalOnMissingBean(name = "janusCompareThreadPool")
-    public ExecutorService janusCompareThreadPool(JanusThreadPoolComponent janusThreadPoolComponent) {
-        return janusThreadPoolComponent.getJanusCompareThreadPool();
+    public ExecutorService janusCompareThreadPool(JanusThreadPoolFactory janusThreadPoolFactory) {
+        return janusThreadPoolFactory.getJanusCompareThreadPool();
     }
 
     @Bean

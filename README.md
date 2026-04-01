@@ -675,7 +675,7 @@ Janus框架中用到的2个线程池，都允许使用者自己注入：
 - [`janusBranchThreadPool`](#自定义执行比对分支的线程池)
 - [`janusCompareThreadPool`](#自定义异步比对线程池)
 
-也可以使用`JanusThreadPoolComponent`来获取框架提供的线程池，自己做增强操作后再注入Spring。
+也可以使用`JanusThreadPoolFactory`来获取框架提供的线程池，自己做增强操作后再注入Spring。
 
 这样既能增强线程池，又能保留在配置文件中配置线程池属性的效果，并且十分方便。
 
@@ -686,12 +686,12 @@ Janus框架中用到的2个线程池，都允许使用者自己注入：
 public class ThreadPoolConfig {
 
     @Autowired
-    private JanusThreadPoolComponent janusThreadPoolComponent;
+    private JanusThreadPoolFactory janusThreadPoolFactory;
 
     @Bean
     public ExecutorService janusBranchThreadPool() {
         // 创建原始线程池
-        ExecutorService janusBranchThreadPool = janusThreadPoolComponent.getJanusBranchThreadPool();
+        ExecutorService janusBranchThreadPool = janusThreadPoolFactory.getJanusBranchThreadPool();
         // 使用 ContextAwareExecutorService 进行增强，确保父线程上下文（如数据源标识）在子线程中可用
         return new ContextAwareExecutorService(janusBranchThreadPool)
                 .addContextPropagator(
