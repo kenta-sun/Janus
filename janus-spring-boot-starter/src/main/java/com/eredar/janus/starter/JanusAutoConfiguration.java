@@ -31,7 +31,6 @@ public class JanusAutoConfiguration {
     @Bean
     @ConfigurationProperties(prefix = "janus")
     public JanusConfigProperties janusConfigProperties() {
-        // 创建 Core 包的 DTO 对象
         return new JanusConfigProperties();
     }
 
