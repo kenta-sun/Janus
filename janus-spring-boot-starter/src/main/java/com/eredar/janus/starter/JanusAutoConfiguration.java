@@ -99,8 +99,18 @@ public class JanusAutoConfiguration {
     }
 
     @Bean
-    public LifecycleDecoratorManager lifecycleDecoratorManager() {
-        return new LifecycleDecoratorManager();
+    public LifecycleDecoratorManager lifecycleDecoratorManager(CoreLifecycle coreLifecycle,
+                                                               TimeLifecycle timeLifecycle,
+                                                               RollbackLifecycle rollbackLifecycle,
+                                                               HigherPluginsExecuteLifecycle higherPluginsExecuteLifecycle,
+                                                               LowerPluginsExecuteLifecycle lowerPluginsExecuteLifecycle) {
+        return new LifecycleDecoratorManager(
+                coreLifecycle,
+                timeLifecycle,
+                rollbackLifecycle,
+                higherPluginsExecuteLifecycle,
+                lowerPluginsExecuteLifecycle
+        );
     }
 
     @Bean

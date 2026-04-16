@@ -2,9 +2,6 @@ package com.eredar.janus.core.lifecycle;
 
 import com.eredar.janus.core.aspect.JanusAspect;
 import com.eredar.janus.core.dto.JanusContextImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.annotation.PostConstruct;
 
 /**
  * 用于组合组合所有生命周期，并且注入{@link JanusAspect}
@@ -12,22 +9,12 @@ import javax.annotation.PostConstruct;
  */
 public class LifecycleDecoratorManager extends LifecycleDecorator {
 
-    @Autowired
-    private CoreLifecycle coreLifecycle;
-    @Autowired
-    private TimeLifecycle timeLifecycle;
-    @Autowired
-    private RollbackLifecycle rollbackLifecycle;
-    @Autowired
-    private HigherPluginsExecuteLifecycle higherPluginsExecuteLifecycle;
-    @Autowired
-    private LowerPluginsExecuteLifecycle lowerPluginsExecuteLifecycle;
-
-    /**
-     * 装饰模式，组合所有生命周期
-     */
-    @PostConstruct
-    public void postConstruct() {
+    public LifecycleDecoratorManager(CoreLifecycle coreLifecycle,
+                                     TimeLifecycle timeLifecycle,
+                                     RollbackLifecycle rollbackLifecycle,
+                                     HigherPluginsExecuteLifecycle higherPluginsExecuteLifecycle,
+                                     LowerPluginsExecuteLifecycle lowerPluginsExecuteLifecycle) {
+        // 装饰模式，组合所有生命周期
         this.setDecoratedLifecycle(higherPluginsExecuteLifecycle)
                 .setDecoratedLifecycle(rollbackLifecycle)
                 .setDecoratedLifecycle(lowerPluginsExecuteLifecycle)
