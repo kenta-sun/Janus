@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 @Primary
 @Service
@@ -224,6 +225,25 @@ public class PrimaryService implements TestInterface {
     @Override
     public void testCompareThrottling(TestRequest request) {
 
+    }
+
+    /**
+     * 测试比对限流场景。
+     * <p>验证：不比对时，能否够正常释放流量统计。
+     */
+    @Janus(
+            methodId = "testCompareThrottling2",
+            compareType = JanusCompareType.ASYNC_COMPARE,
+            plugins = {CompareThrottling2JanusPlugin.class, CountCompare3JanusPlugin.class}
+    )
+    @Override
+    public void testCompareThrottling2(TestRequest request) {
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.err.println("testCompareThrottling2-Primary-" + request.getKey());
     }
 
     @Janus(

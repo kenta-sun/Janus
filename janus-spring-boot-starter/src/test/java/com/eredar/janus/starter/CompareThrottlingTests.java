@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
@@ -19,6 +20,7 @@ public class CompareThrottlingTests {
     private TestInterface testInterface;
 
     public static LongAdder longAdder = new LongAdder();
+    public static LongAdder longAdder2 = new LongAdder();
 
     @Test
     public void testCompareThrottling() {
@@ -27,5 +29,18 @@ public class CompareThrottlingTests {
         }
 
         Assertions.assertEquals(3, longAdder.longValue());
+    }
+
+    @Test
+    public void testCompareThrottling2() {
+        for (int i = 0; i < 12; i++) {
+            testInterface.testCompareThrottling2(TestRequest.builder().key(String.valueOf(i + 1)).build());
+        }
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        Assertions.assertEquals(1, longAdder2.longValue());
     }
 }

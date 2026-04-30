@@ -19,6 +19,8 @@ public interface TestInterface {
 
     void testCompareThrottling(TestRequest request);
 
+    void testCompareThrottling2(TestRequest request);
+
     void janusAspectStatus1(TestRequest request);
 
     void janusAspectStatus2(TestRequest request);
