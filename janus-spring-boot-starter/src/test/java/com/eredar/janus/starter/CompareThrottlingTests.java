@@ -34,10 +34,13 @@ public class CompareThrottlingTests {
     @Test
     public void testCompareThrottling2() {
         for (int i = 0; i < 12; i++) {
+            testInterface.testCompareThrottling3(TestRequest.builder().key(String.valueOf(i + 1)).build());
+        }
+        for (int i = 0; i < 12; i++) {
             testInterface.testCompareThrottling2(TestRequest.builder().key(String.valueOf(i + 1)).build());
         }
         try {
-            TimeUnit.SECONDS.sleep(2);
+            TimeUnit.SECONDS.sleep(30);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

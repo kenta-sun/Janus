@@ -14,10 +14,12 @@ public class CompareThrottling2JanusPlugin implements JanusPlugin {
 
     @Override
     public void switchBranch(JanusContext context) {
-        int value = longAdder.intValue();
         longAdder.increment();
-        if (value < 11) {
+        int value = longAdder.intValue();
+        if (value <= 11) {
             context.setNeedCompare(false);
+        } else {
+            context.setNeedCompare(true);
         }
     }
 }

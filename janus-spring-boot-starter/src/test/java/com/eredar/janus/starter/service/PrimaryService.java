@@ -246,6 +246,23 @@ public class PrimaryService implements TestInterface {
         System.err.println("testCompareThrottling2-Primary-" + request.getKey());
     }
 
+    /**
+     * 测试比对限流场景。
+     */
+    @Janus(
+            methodId = "testCompareThrottling3",
+            compareType = JanusCompareType.ASYNC_COMPARE
+    )
+    @Override
+    public void testCompareThrottling3(TestRequest request) {
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.err.println("testCompareThrottling3-Primary-" + request.getKey());
+    }
+
     @Janus(
             methodId = "janusAspectStatus1",
             compareType = JanusCompareType.ASYNC_COMPARE,

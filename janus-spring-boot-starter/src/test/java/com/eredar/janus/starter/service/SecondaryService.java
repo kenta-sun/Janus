@@ -178,6 +178,11 @@ public class SecondaryService implements TestInterface {
     }
 
     @Override
+    public void testCompareThrottling3(TestRequest request) {
+        System.err.println("执行 testCompareThrottling3 secondary");
+    }
+
+    @Override
     public void janusAspectStatus1(TestRequest request) {
         System.err.println("执行 janusAspectStatus1 secondary");
     }
