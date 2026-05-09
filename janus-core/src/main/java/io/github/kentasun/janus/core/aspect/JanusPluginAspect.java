@@ -19,7 +19,7 @@ import org.aspectj.lang.annotation.Pointcut;
 public class JanusPluginAspect {
 
     // 切所有JanusPlugin类型的target对象的类(原本的bean，不包括父类和代理类)
-    @Pointcut("target(plugin.io.github.kentasun.janus.core.JanusPlugin)" +
+    @Pointcut("target(io.github.kentasun.janus.core.plugin.JanusPlugin)" +
             " && !within(io.github.kentasun.janus.core.plugin..*)" +
             " && execution(public * *(..))" +
             " && !execution(* getOrder())")
