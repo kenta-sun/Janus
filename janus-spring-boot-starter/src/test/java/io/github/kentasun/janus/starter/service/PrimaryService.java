@@ -1,0 +1,297 @@
+package io.github.kentasun.janus.starter.service;
+
+import io.github.kentasun.janus.core.annotation.Janus;
+import io.github.kentasun.janus.core.constants.JanusCompareType;
+import io.github.kentasun.janus.core.constants.JanusConstants;
+import io.github.kentasun.janus.starter.annotation.TestAnnotation;
+import io.github.kentasun.janus.starter.dao.TestRollbackMapper;
+import io.github.kentasun.janus.starter.dto.TestIgnoreDTO;
+import io.github.kentasun.janus.starter.dto.TestRequest;
+import io.github.kentasun.janus.starter.dto.TestResponse;
+import io.github.kentasun.janus.starter.dto.TestRollbackEntity;
+import io.github.kentasun.janus.starter.plugins.*;
+import io.github.kentasun.janus.starter.plugins.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
+@Primary
+@Service
+public class PrimaryService implements TestInterface {
+
+    @Autowired
+    private TestRollbackMapper testRollbackMapper;
+    @Lazy
+    @Autowired
+    private PrimaryService thisService;
+
+    @Janus(
+            methodId = "testAsyncCompare1",
+            compareType = JanusCompareType.ASYNC_COMPARE,
+            businessKey = "#request.key",
+            plugins = {AsyncSwitchJanusPlugin.class, CountCompareJanusPlugin.class}
+    )
+    @Override
+    public TestResponse testAsyncCompare1(TestRequest request) {
+        return TestResponse.builder()
+                .number(0)
+                .build();
+    }
+
+    @Janus(
+            methodId = "testAsyncCompare2",
+            compareType = JanusCompareType.ASYNC_COMPARE,
+            businessKey = "#request.key",
+            plugins = {AsyncSwitchJanusPlugin.class, AsyncResJanusPlugin.class}
+    )
+    @Override
+    public TestResponse testAsyncCompare2(TestRequest request) {
+        return TestResponse.builder()
+                .number(0)
+                .build();
+    }
+
+    @Janus(
+            methodId = "testSyncCompare",
+            compareType = JanusCompareType.SYNC_COMPARE,
+            isAsyncCompare = false,
+            businessKey = "buildKey(#request.key, 'qqq')",
+            plugins = {SwitchJanusPlugin.class, TestAnnotationJanusPlugin.class, ExecuteTimeJanusPlugin.class}
+    )
+    @TestAnnotation(value = "Archimonde")
+    @Override
+    public TestResponse testSyncCompare(TestRequest request) {
+        if ("1".equals(request.getKey())) {
+            return TestResponse.builder()
+                    .number(1)
+                    .build();
+        } else if ("2".equals(request.getKey())) {
+            return TestResponse.builder()
+                    .number(2)
+                    .build();
+        }
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return TestResponse.builder()
+                .number(0)
+                .build();
+    }
+
+    @Janus(
+            methodId = "testRollbackOne",
+            compareType = JanusCompareType.SYNC_ROLLBACK_ONE_COMPARE,
+            isAsyncCompare = false,
+            businessKey = "#request.key",
+            plugins = {TestRollbackQueryDataJanusPlugin.class, ExecuteTimeJanusPlugin.class}
+    )
+    @Transactional(rollbackFor = Throwable.class)
+    @Override
+    public TestResponse testRollbackOne(TestRequest request) {
+        String key = request.getKey();
+        if ("a".equals(key)) {
+            Integer existNum = testRollbackMapper.selectNumByKey("exist");
+            testRollbackMapper.updateByKey("exist", existNum + 1);
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(1)
+                    .build());
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(2)
+                    .build());
+            testRollbackMapper.deleteByKey("delete");
+        } else if ("compareBranch_err".equals(key)) {
+            Integer existNum = testRollbackMapper.selectNumByKey("exist");
+            testRollbackMapper.updateByKey("exist", existNum + 1);
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(1)
+                    .build());
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(2)
+                    .build());
+            testRollbackMapper.deleteByKey("delete");
+            @SuppressWarnings({"NumericOverflow", "divzero", "unused"}) int a = 2 / 0;
+        } else if ("masterBranch_err".equals(key)) {
+            Integer existNum = testRollbackMapper.selectNumByKey("exist");
+            testRollbackMapper.updateByKey("exist", existNum + 1);
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(1)
+                    .build());
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(2)
+                    .build());
+            testRollbackMapper.deleteByKey("delete");
+        }
+        return TestResponse.builder()
+                .number(0)
+                .build();
+    }
+
+    @Janus(
+            methodId = "testRollbackAll",
+            compareType = JanusCompareType.SYNC_ROLLBACK_ALL_COMPARE,
+            isAsyncCompare = false,
+            businessKey = "#request.key",
+            plugins = {TestRollbackQueryDataJanusPlugin.class, ExecuteTimeJanusPlugin.class}
+    )
+    @Transactional(rollbackFor = Throwable.class)
+    @Override
+    public TestResponse testRollbackAll(TestRequest request) {
+        String key = request.getKey();
+        if ("a".equals(key)) {
+            Integer existNum = testRollbackMapper.selectNumByKey("exist");
+            testRollbackMapper.updateByKey("exist", existNum + 1);
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(1)
+                    .build());
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(2)
+                    .build());
+            testRollbackMapper.deleteByKey("delete");
+        } else if ("compareBranch_err".equals(key)) {
+            Integer existNum = testRollbackMapper.selectNumByKey("exist");
+            testRollbackMapper.updateByKey("exist", existNum + 1);
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(1)
+                    .build());
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(2)
+                    .build());
+            testRollbackMapper.deleteByKey("delete");
+            @SuppressWarnings({"NumericOverflow", "divzero", "unused"}) int a = 2 / 0;
+        } else if ("masterBranch_err".equals(key)) {
+            Integer existNum = testRollbackMapper.selectNumByKey("exist");
+            testRollbackMapper.updateByKey("exist", existNum + 1);
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(1)
+                    .build());
+            testRollbackMapper.insert(TestRollbackEntity.builder()
+                    .tblKey(key)
+                    .tblNum(2)
+                    .build());
+            testRollbackMapper.deleteByKey("delete");
+        }
+        return TestResponse.builder()
+                .number(0)
+                .build();
+    }
+
+    @Janus(
+            methodId = "testIgnore",
+            compareType = JanusCompareType.SYNC_COMPARE,
+            isAsyncCompare = false,
+            plugins = ExecuteTimeJanusPlugin.class,
+            ignoreFieldPaths = {"res.ignoreStr1", "res.ignoreList.str2"}
+    )
+    @Override
+    public TestResponse testIgnore() {
+        return TestResponse.builder()
+                .number(1)
+                .ignoreStr1("123")
+                .ignoreList(new ArrayList<>(Arrays.asList(
+                        TestIgnoreDTO.builder().str1("1").str2("2").build(),
+                        TestIgnoreDTO.builder().str1("1").str2("2").build()
+                )))
+                .build();
+    }
+
+    /**
+     * 测试比对限流场景。
+     * <p>限制比对流量，比如只比3个调用，超过三次，后面所有的调用都不比对。
+     */
+    @Janus(
+            methodId = "testCompareThrottling",
+            compareType = JanusCompareType.SYNC_COMPARE,
+            isAsyncCompare = false,
+            plugins = {CompareThrottlingJanusPlugin.class, CountCompare2JanusPlugin.class}
+    )
+    @Override
+    public void testCompareThrottling(TestRequest request) {
+
+    }
+
+    /**
+     * 测试比对限流场景。
+     * <p>验证：不比对时，能否够正常释放流量统计。
+     */
+    @Janus(
+            methodId = "testCompareThrottling2",
+            compareType = JanusCompareType.ASYNC_COMPARE,
+            plugins = {CompareThrottling2JanusPlugin.class, CountCompare3JanusPlugin.class}
+    )
+    @Override
+    public void testCompareThrottling2(TestRequest request) {
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.err.println("testCompareThrottling2-Primary-" + request.getKey());
+    }
+
+    /**
+     * 测试比对限流场景。
+     */
+    @Janus(
+            methodId = "testCompareThrottling3",
+            compareType = JanusCompareType.ASYNC_COMPARE
+    )
+    @Override
+    public void testCompareThrottling3(TestRequest request) {
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.err.println("testCompareThrottling3-Primary-" + request.getKey());
+    }
+
+    @Janus(
+            methodId = "janusAspectStatus1",
+            compareType = JanusCompareType.ASYNC_COMPARE,
+            businessKey = "#request.key",
+            plugins = AsyncSwitchJanusPlugin.class
+    )
+    @Override
+    public void janusAspectStatus1(TestRequest request) {
+        System.err.println("执行 janusAspectStatus1 primary");
+        if (JanusConstants.PRIMARY.equals(request.getKey())) {
+            this.thisService.janusAspectStatus2(TestRequest.builder()
+                    .key(JanusConstants.SECONDARY)
+                    .build());
+        } else {
+            this.thisService.janusAspectStatus2(TestRequest.builder()
+                    .key(JanusConstants.PRIMARY)
+                    .build());
+        }
+    }
+
+    @Janus(
+            methodId = "janusAspectStatus2",
+            compareType = JanusCompareType.ASYNC_COMPARE,
+            businessKey = "#request.key",
+            plugins = AsyncSwitchJanusPlugin.class
+    )
+    @Override
+    public void janusAspectStatus2(TestRequest request) {
+        System.err.println("执行 janusAspectStatus2 primary");
+    }
+}

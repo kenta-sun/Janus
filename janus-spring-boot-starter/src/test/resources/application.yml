@@ -8,6 +8,7 @@ janus:
 
 logging:
   level:
-    com:
-      eredar:
-        janus: TRACE
+    io:
+      github:
+        kentasun:
+          janus: TRACE
