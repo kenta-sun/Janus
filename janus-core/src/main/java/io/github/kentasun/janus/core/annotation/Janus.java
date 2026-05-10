@@ -28,6 +28,8 @@ public @interface Janus {
      * <p>1. true: 异步执行比对功能</p>
      * <p>2. false: 主线程同步执行比对功能</p>
      * <p>不配置该项时，默认为 {@code true}，表示异步执行比对过程。</p>
+     *
+     * @return true-异步执行；false-同步执行
      */
     boolean isAsyncCompare() default true;
 
@@ -38,8 +40,10 @@ public @interface Janus {
     Class<? extends JanusPlugin>[] plugins() default {};
 
     /**
-     * 比对时忽略的字段路径列表
-     * 例如：{"id", "createTime", "user.password"}
+     * <p>比对时忽略的字段路径列表</p>
+     * <p>例如：{"id", "createTime", "user.password"}</p>
+     *
+     * @return 比对时忽略的字段路径的 {@code String[]}
      */
     String[] ignoreFieldPaths() default {};
 }

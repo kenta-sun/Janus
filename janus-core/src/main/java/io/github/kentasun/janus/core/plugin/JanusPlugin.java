@@ -5,10 +5,10 @@ import io.github.kentasun.janus.core.dto.JanusContext;
 
 /**
  * Janus 插件接口
- * <p>1. 责任链模式，根据优先级决定插件进入和退出的时间。
- * <p>2. 优先级越高，进入越早，结束越晚。
- * <p>3. 【落表比对回滚功能】，可以理解为优先级为0。所以其他插件优先级不可被设置为0，方便排列先后顺序。
- * <p>4. 大于0的插件先退出，可在after方法中查询落表内容；然后执行回滚功能，小于0的插件后退出。
+ * <p>1. 责任链模式，根据优先级决定插件进入和退出的时间。</p>
+ * <p>2. 优先级越高，进入越早，结束越晚。</p>
+ * <p>3. 【落表比对回滚功能】，可以理解为优先级为0。所以其他插件优先级不可被设置为0，方便排列先后顺序。</p>
+ * <p>4. 大于0的插件先退出，可在after方法中查询落表内容；然后执行回滚功能，小于0的插件后退出。</p>
  */
 public interface JanusPlugin {
 
@@ -25,7 +25,7 @@ public interface JanusPlugin {
     int LOWEST_PRECEDENCE = Integer.MAX_VALUE;
 
     /**
-     * 插件优先级。
+     * <p>插件优先级。</p>
      * <p>1. 默认最高优先级，即最先进入，最晚退出。
      * <p>2. 相同优先级的插件，根据{@link Janus#plugins}的配置顺序决定其先后顺序
      */
@@ -34,7 +34,9 @@ public interface JanusPlugin {
     }
 
     /**
-     * 分流。
+     * 分流
+     *
+     * @param context 上下文
      */
     default void switchBranch(JanusContext context) {
         // 默认空实现
@@ -42,14 +44,18 @@ public interface JanusPlugin {
 
     /**
      * primary 分支执行前
+     *
+     * @param context 上下文
      */
     default void beforePrimaryExecute(JanusContext context) {
         // 默认空实现
     }
 
     /**
-     * primary 分支执行后
-     * <p>可以用于查询落表结果
+     * <p>primary 分支执行后</p>
+     * <p>可以用于查询落表结果</p>
+     *
+     * @param context 上下文
      */
     default void afterPrimaryExecute(JanusContext context) {
         // 默认空实现
@@ -57,31 +63,39 @@ public interface JanusPlugin {
 
     /**
      * secondary 分支执行前
+     *
+     * @param context 上下文
      */
     default void beforeSecondaryExecute(JanusContext context) {
         // 默认空实现
     }
 
     /**
-     * secondary 分支执行后
-     * <p>可以用于查询落表结果
+     * <p>secondary 分支执行后</p>
+     * <p>可以用于查询落表结果</p>
+     *
+     * @param context 上下文
      */
     default void afterSecondaryExecute(JanusContext context) {
         // 默认空实现
     }
 
     /**
-     * 比对前
-     * <p>可以用于对结果进行预处理（例如忽略时间戳字段、对列表进行排序等）
+     * <p>比对前</p>
+     * <p>可以用于对结果进行预处理（例如忽略时间戳字段、对列表进行排序等）</p>
+     *
+     * @param context 上下文
      */
     default void beforeCompare(JanusContext context) {
         // 默认空实现
     }
 
     /**
-     * 比对后
-     * <p>比对已完成，结果已知。
-     * <p>可以用于异步打印日志、发送报警、落库统计
+     * <p>比对后</p>
+     * <p>比对已完成，结果已知。</p>
+     * <p>可以用于异步打印日志、发送报警、落库统计</p>
+     *
+     * @param context 上下文
      */
     default void afterCompare(JanusContext context) {
         // 默认空实现

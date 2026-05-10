@@ -19,7 +19,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 /**
- * Janus 对外暴露的上下文
+ * Janus 上下文
  */
 @Slf4j
 @Builder

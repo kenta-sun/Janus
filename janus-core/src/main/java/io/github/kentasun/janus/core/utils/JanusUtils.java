@@ -13,17 +13,8 @@ import java.util.Map;
 public class JanusUtils {
 
     /**
-     * 默认值工具
-     */
-    public static <T> T defaultIfNull(final T object, final T defaultValue) {
-        return object != null ? object : defaultValue;
-    }
-
-    /**
      * <p>Checks if a CharSequence is empty (""), null or whitespace only.</p>
-     *
      * <p>Whitespace is defined by {@link Character#isWhitespace(char)}.</p>
-     *
      * <pre>
      * StringUtils.isBlank(null)      = true
      * StringUtils.isBlank("")        = true
@@ -32,7 +23,7 @@ public class JanusUtils {
      * StringUtils.isBlank("  bob  ") = false
      * </pre>
      *
-     * @param cs  the CharSequence to check, may be null
+     * @param cs the CharSequence to check, may be null
      * @return {@code true} if the CharSequence is null, empty or whitespace only
      * @since 2.0
      * @since 3.0 Changed signature from isBlank(String) to isBlank(CharSequence)
@@ -52,6 +43,9 @@ public class JanusUtils {
 
     /**
      * 字符串是否非空
+     *
+     * @param cs the CharSequence to check, may be null
+     * @return {@code true} if the CharSequence is not null, not empty and not whitespace only
      */
     public static boolean isNotBlank(final CharSequence cs) {
         return !isBlank(cs);
@@ -61,10 +55,9 @@ public class JanusUtils {
      * Gets a CharSequence length or {@code 0} if the CharSequence is
      * {@code null}.
      *
-     * @param cs
-     *            a CharSequence or {@code null}
+     * @param cs a CharSequence or {@code null}
      * @return CharSequence length or {@code 0} if the CharSequence is
-     *         {@code null}.
+     * {@code null}.
      * @since 2.4
      * @since 3.0 Changed signature from length(String) to length(CharSequence)
      */
@@ -90,6 +83,9 @@ public class JanusUtils {
 
     /**
      * 获取切点方法
+     *
+     * @param joinPoint 切点对象
+     * @return 切点方法对象
      */
     public static Method getMethodFromJoinPoint(ProceedingJoinPoint joinPoint) {
         // 获取方法签名
@@ -122,5 +118,17 @@ public class JanusUtils {
             annotation = AnnotationUtils.findAnnotation(specificMethod, annotationClass);
         }
         return annotation;
+    }
+
+    /**
+     * 默认值
+     *
+     * @param object       目标对象
+     * @param defaultValue 默认值对象
+     * @param <T>          目标对象的类型
+     * @return 如果 {@code object} 不为 {@code null} 则返回 {@code object}；反之返回 {@code defaultValue}
+     */
+    public static <T> T defaultIfNull(final T object, final T defaultValue) {
+        return object != null ? object : defaultValue;
     }
 }
