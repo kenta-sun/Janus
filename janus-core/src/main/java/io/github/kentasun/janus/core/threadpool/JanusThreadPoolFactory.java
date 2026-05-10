@@ -21,6 +21,8 @@ public class JanusThreadPoolFactory {
 
     /**
      * 创建执行比对分支的线程池
+     *
+     * @return 执行比对分支的线程池
      */
     public ExecutorService getJanusBranchThreadPool() {
         /* 线程工厂 */
@@ -47,6 +49,8 @@ public class JanusThreadPoolFactory {
 
     /**
      * 创建比对线程池
+     *
+     * @return 比对线程池
      */
     public ExecutorService getJanusCompareThreadPool() {
         /* 线程工厂 */

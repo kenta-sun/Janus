@@ -14,12 +14,14 @@ public interface JanusPlugin {
 
     /**
      * 最高优先级
+     *
      * @see java.lang.Integer#MIN_VALUE
      */
     int HIGHEST_PRECEDENCE = Integer.MIN_VALUE;
 
     /**
      * 最低优先级
+     *
      * @see java.lang.Integer#MAX_VALUE
      */
     int LOWEST_PRECEDENCE = Integer.MAX_VALUE;
@@ -28,6 +30,8 @@ public interface JanusPlugin {
      * <p>插件优先级。</p>
      * <p>1. 默认最高优先级，即最先进入，最晚退出。
      * <p>2. 相同优先级的插件，根据{@link Janus#plugins}的配置顺序决定其先后顺序
+     *
+     * @return 优先级数字
      */
     default int getOrder() {
         return HIGHEST_PRECEDENCE;

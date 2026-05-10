@@ -43,6 +43,8 @@ public class JanusConfigProperties {
 
     /**
      * 总开关是否关闭
+     *
+     * @return {@code true} -关闭；{@code false} -开启
      */
     public Boolean isClosed() {
         return !this.isOpen;

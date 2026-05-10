@@ -54,7 +54,7 @@ public class JanusPluginManager {
      * 批量获取方法级别的插件
      *
      * @param clazzArr 插件数组
-     * @return 方法级别的插件列表
+     * @return 方法级别的插件的 {@code List<JanusPlugin>}
      */
     public List<JanusPlugin> getMethodPluginList(Class<? extends JanusPlugin>[] clazzArr) {
         if (clazzArr == null || clazzArr.length == 0) {
@@ -86,6 +86,8 @@ public class JanusPluginManager {
 
     /**
      * 获取所有的全局插件
+     *
+     * @return 所有的全局插件的 {@code List<JanusPlugin>}
      */
     public List<JanusPlugin> getAllGlobalPluginList() {
         return new ArrayList<>(this.globalPluginMap.values());

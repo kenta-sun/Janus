@@ -70,6 +70,8 @@ public interface JanusContext {
 
     /**
      * 获取主分支名称
+     *
+     * @return 主分支名
      */
     String getMasterBranchName();
 

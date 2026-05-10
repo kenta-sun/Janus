@@ -36,9 +36,10 @@ public class AbstractDataJanusPlugin<T> implements JanusPlugin {
     }
 
     /**
-     * 获取插件数据对象
-     * <p>如果没找到，会自动通过反射new数据对象
+     * <p>获取插件数据对象</p>
+     * <p>如果没找到，会自动通过反射new数据对象</p>
      *
+     * @param context 上下文
      * @return 插件数据对象
      */
     protected final T getPluginData(JanusContext context) {
