@@ -7,8 +7,8 @@ import java.util.List;
 
 /**
  * 核心生命周期静态装饰类。
- * <P>1. 作为装饰类，增强的功能为：在正确的生命周期节点执行配置的插件。
- * <P>2. 仅执行优先级小于0的插件。
+ * <p>1. 作为装饰类，增强的功能为：在正确的生命周期节点执行配置的插件。</p>
+ * <p>2. 仅执行优先级小于0的插件。</p>
  */
 public class HigherPluginsExecuteLifecycle extends LifecycleDecorator {
 

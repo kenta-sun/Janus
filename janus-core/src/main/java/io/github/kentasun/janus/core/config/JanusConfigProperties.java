@@ -17,18 +17,18 @@ public class JanusConfigProperties {
     // 总开关 Y-开启，N-关闭。不配置，默认开启
     private Boolean isOpen = Boolean.TRUE;
 
-    /*
+    /**
      * 未配置具体的分流开关时默认分支使用哪个。
-     * 可以配置：
-     *      1.primary: 代表添加 Janus 注解的分支
-     *      2.secondary: 代表添加 Secondary 注解的 Service 所在分支
-     * 不配置该项时，默认为 secondary，因为一般 secondary 代表老分支，是正确的。
+     * <p>可以配置：</p>
+     * <p>1. primary: 代表添加 Janus 注解的分支</p>
+     * <p>2. secondary: 代表添加 Secondary 注解的 Service 所在分支</p>
+     * <p>不配置该项时，默认为 secondary，因为一般 secondary 代表老分支，是正确的。</p>
      */
     private String defaultMasterBranch = JanusConstants.SECONDARY;
 
-    /*
-     * 默认比对类型，见 JanusCompareType
-     * 默认值为 ASYNC_COMPARE 异步比对
+    /**
+     * 默认比对类型，见 {@link io.github.kentasun.janus.core.constants.JanusCompareType}。
+     * <p>默认值为 ASYNC_COMPARE 异步比对。</p>
      */
     private String defaultCompareType = JanusCompareType.ASYNC_COMPARE;
 

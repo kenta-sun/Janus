@@ -23,10 +23,10 @@ public class BranchInfoImpl implements BranchInfo {
     // 异常对象
     @Setter
     private Throwable exception;
-    /*
+    /**
      * 是否做事务回滚：如果为true，Janus框架会强制添加事务并回滚分支执行的部分。
-     * 1. 如果已经存在事务，会采用已经存在的事务。
-     * 2. 不会回滚整个事务，仅回滚分支执行的部分。
+     * <p>1. 如果已经存在事务，会采用已经存在的事务。</p>
+     * <p>2. 不会回滚整个事务，仅回滚分支执行的部分。</p>
      */
     @Setter
     private Boolean isRollback;
