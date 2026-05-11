@@ -4,12 +4,13 @@ import io.github.kentasun.janus.core.dto.JanusContext;
 import io.github.kentasun.janus.core.plugin.JanusPlugin;
 import io.github.kentasun.janus.starter.CompareThrottlingTests;
 import io.github.kentasun.janus.starter.dto.TestRequest;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @Component
 public class CountCompare2JanusPlugin implements JanusPlugin {
+
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(CountCompare2JanusPlugin.class);
 
     @Override
     public void afterCompare(JanusContext context) {

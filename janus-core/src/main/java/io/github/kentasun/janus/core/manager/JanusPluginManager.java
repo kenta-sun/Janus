@@ -6,7 +6,8 @@ import io.github.kentasun.janus.core.plugin.JanusPlugin;
 import io.github.kentasun.janus.core.utils.JanusAopUtils;
 import io.github.kentasun.janus.core.utils.JanusLogUtils;
 import io.github.kentasun.janus.core.utils.JanusUtils;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import java.util.ArrayList;
@@ -14,8 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
 public class JanusPluginManager {
+
+    private static final Logger log = LoggerFactory.getLogger(JanusPluginManager.class);
 
     private final Map<Class<? extends JanusPlugin>, JanusPlugin> globalPluginMap;
     private final Map<Class<? extends JanusPlugin>, JanusPlugin> methodPluginMap;

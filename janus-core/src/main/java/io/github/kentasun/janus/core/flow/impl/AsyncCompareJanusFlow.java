@@ -6,7 +6,8 @@ import io.github.kentasun.janus.core.dto.JanusContextImpl;
 import io.github.kentasun.janus.core.flow.JanusFlow;
 import io.github.kentasun.janus.core.threadpool.JanusBranchThreadPoolMetricsProvider;
 import io.github.kentasun.janus.core.utils.JanusLogUtils;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -22,8 +23,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>在调用方线程中执行主分支，然后将比对分支的执行和结果比对提交到异步线程池中处理，
  * 主分支的返回对用户完全无感知延迟。内置自适应限流逻辑，当线程池压力过大时会丢弃积压严重的方法的比对任务。</p>
  */
-@Slf4j
 public class AsyncCompareJanusFlow implements JanusFlow {
+
+    private static final Logger log = LoggerFactory.getLogger(AsyncCompareJanusFlow.class);
 
     // 用于异步执行比对分支的线程池
     @Qualifier("janusBranchThreadPool")

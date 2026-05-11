@@ -11,9 +11,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
-import lombok.SneakyThrows;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
@@ -45,34 +45,52 @@ public class JanusJsonUtils {
         ob.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
     }
 
-    @SneakyThrows
     public static <T> T readValue(String jsonString, TypeReference<T> type) {
-        return ob.readValue(jsonString, type);
+        try {
+            return ob.readValue(jsonString, type);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @SneakyThrows
     public static <T> T readValue(String jsonString, Class<T> type) {
-        return ob.readValue(jsonString, type);
+        try {
+            return ob.readValue(jsonString, type);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @SneakyThrows
     public static <T> T readValue(File file, TypeReference<T> type) {
-        return ob.readValue(file, type);
+        try {
+            return ob.readValue(file, type);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @SneakyThrows
     public static <T> T treeToValue(JsonNode jsonNode, Class<T> valueType) {
-        return ob.treeToValue(jsonNode, valueType);
+        try {
+            return ob.treeToValue(jsonNode, valueType);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @SneakyThrows
     public static String writeValueAsString(Object object) {
-        return ob.writeValueAsString(object);
+        try {
+            return ob.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @SneakyThrows
     public static void writeValue(File file, Object value) {
-        ob.writeValue(file, value);
+        try {
+            ob.writeValue(file, value);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static <T> T writeThenRead(Object object, TypeReference<T> type) {

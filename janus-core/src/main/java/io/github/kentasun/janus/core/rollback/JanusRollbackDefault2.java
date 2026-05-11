@@ -1,9 +1,10 @@
 //package io.github.kentasun.janus.core.rollback;
 //
-//import dto.io.github.kentasun.janus.core.JanusContext;
-//import exception.io.github.kentasun.janus.core.JanusException;
-//import utils.io.github.kentasun.janus.core.JanusLogUtils;
-//import lombok.extern.slf4j.Slf4j;
+//import io.github.kentasun.janus.core.dto.JanusContext;
+//import io.github.kentasun.janus.core.exception.JanusException;
+//import io.github.kentasun.janus.core.utils.JanusLogUtils;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.jdbc.datasource.ConnectionHolder;
 //import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -18,14 +19,15 @@
 ///**
 // * 相比 JanusRollbackDefault，该实现允许 setSavepoint(String name) 时自定义 name
 // */
-//@Slf4j
 //public class JanusRollbackDefault2 implements JanusRollback {
+//
+//    private static final Logger log = LoggerFactory.getLogger(JanusRollbackDefault2.class);
 //
 //    @Autowired(required = false)
 //    private DataSource dataSource;
 //    @Autowired(required = false)
 //    private JanusRollbackClearCache janusRollbackClearCache;
-//
+//    @Override
 //    public void branchRollback(JanusContext context, String lifecycle, Runnable runnable) {
 //        if (dataSource == null) {
 //            runnable.run();

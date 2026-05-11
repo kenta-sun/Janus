@@ -2,21 +2,23 @@ package io.github.kentasun.janus.core.aspect;
 
 import io.github.kentasun.janus.core.dto.JanusContext;
 import io.github.kentasun.janus.core.utils.JanusLogUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 异常捕获切面，用于防止不重要的异常导致中断比对流程
  * <p>1. 可以防止影响正常功能
  * <p>2. 可以防止插件等附加功能之间互相影响
  */
-@Slf4j
 @Aspect
 public class JanusPluginAspect {
+
+    private static final Logger log = LoggerFactory.getLogger(JanusPluginAspect.class);
 
     // 切所有JanusPlugin类型的target对象的类(原本的bean，不包括父类和代理类)
     @Pointcut("target(io.github.kentasun.janus.core.plugin.JanusPlugin)" +

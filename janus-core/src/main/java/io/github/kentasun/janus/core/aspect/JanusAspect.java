@@ -19,11 +19,12 @@ import io.github.kentasun.janus.core.manager.JanusPluginManager;
 import io.github.kentasun.janus.core.plugin.JanusPlugin;
 import io.github.kentasun.janus.core.utils.JanusLogUtils;
 import io.github.kentasun.janus.core.utils.JanusUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.Order;
@@ -37,11 +38,12 @@ import java.util.stream.Collectors;
 /**
  * Janus 核心
  */
-@Slf4j
 // 不能设置最小值，设置最小值会报错：java.lang.IllegalStateException: Required to bind 2 arguments, but only bound 1 (JoinPointMatch was NOT bound in invocation)
 @Order(1) // 设置较高优先级，尽量让该切面先执行
 @Aspect
 public class JanusAspect {
+
+    private static final Logger log = LoggerFactory.getLogger(JanusAspect.class);
 
     @Autowired
     private LifecycleDecoratorManager lifecycleDecoratorManager;

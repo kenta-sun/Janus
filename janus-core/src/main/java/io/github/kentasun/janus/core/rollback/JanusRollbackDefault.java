@@ -3,20 +3,23 @@ package io.github.kentasun.janus.core.rollback;
 import io.github.kentasun.janus.core.dto.JanusContext;
 import io.github.kentasun.janus.core.exception.JanusException;
 import io.github.kentasun.janus.core.utils.JanusLogUtils;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-@Slf4j
 public class JanusRollbackDefault implements JanusRollback {
+
+    private static final Logger log = LoggerFactory.getLogger(JanusRollbackDefault.class);
 
     @Autowired(required = false)
     private JanusRollbackClearCache janusRollbackClearCache;
 
     /**
      * 开启 子事务 并回滚
+     *
      * @param runnable 要回滚的分支代码
      */
     @Transactional(propagation = Propagation.NESTED) // 子事务，savepoint

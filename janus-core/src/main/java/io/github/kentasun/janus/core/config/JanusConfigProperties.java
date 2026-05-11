@@ -2,13 +2,11 @@ package io.github.kentasun.janus.core.config;
 
 import io.github.kentasun.janus.core.constants.JanusCompareType;
 import io.github.kentasun.janus.core.constants.JanusConstants;
-import lombok.Data;
 
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-@Data
 public class JanusConfigProperties {
 
     // 是否校验：@Janus 注解中的 methodId 有无重复。 默认校验，有重复启动时会报错。
@@ -50,7 +48,62 @@ public class JanusConfigProperties {
         return !this.isOpen;
     }
 
-    @Data
+    public Boolean getMethodIdDuplicateCheck() {
+        return isMethodIdDuplicateCheck;
+    }
+
+    public void setMethodIdDuplicateCheck(Boolean methodIdDuplicateCheck) {
+        isMethodIdDuplicateCheck = methodIdDuplicateCheck;
+    }
+
+    public Boolean getOpen() {
+        return isOpen;
+    }
+
+    public void setOpen(Boolean open) {
+        isOpen = open;
+    }
+
+    public String getDefaultMasterBranch() {
+        return defaultMasterBranch;
+    }
+
+    public void setDefaultMasterBranch(String defaultMasterBranch) {
+        this.defaultMasterBranch = defaultMasterBranch;
+    }
+
+    public String getDefaultCompareType() {
+        return defaultCompareType;
+    }
+
+    public void setDefaultCompareType(String defaultCompareType) {
+        this.defaultCompareType = defaultCompareType;
+    }
+
+    public ThreadPoolProperty getJanusBranchThreadPool() {
+        return janusBranchThreadPool;
+    }
+
+    public void setJanusBranchThreadPool(ThreadPoolProperty janusBranchThreadPool) {
+        this.janusBranchThreadPool = janusBranchThreadPool;
+    }
+
+    public ThreadPoolProperty getJanusCompareThreadPool() {
+        return janusCompareThreadPool;
+    }
+
+    public void setJanusCompareThreadPool(ThreadPoolProperty janusCompareThreadPool) {
+        this.janusCompareThreadPool = janusCompareThreadPool;
+    }
+
+    public AsyncCompareThrottling getAsyncCompareThrottling() {
+        return asyncCompareThrottling;
+    }
+
+    public void setAsyncCompareThrottling(AsyncCompareThrottling asyncCompareThrottling) {
+        this.asyncCompareThrottling = asyncCompareThrottling;
+    }
+
     public static class ThreadPoolProperty {
 
         private Integer corePoolSize;
@@ -97,10 +150,49 @@ public class JanusConfigProperties {
             }
             return null;
         }
+
+        public Integer getCorePoolSize() {
+            return corePoolSize;
+        }
+
+        public void setCorePoolSize(Integer corePoolSize) {
+            this.corePoolSize = corePoolSize;
+        }
+
+        public Integer getMaximumPoolSize() {
+            return maximumPoolSize;
+        }
+
+        public void setMaximumPoolSize(Integer maximumPoolSize) {
+            this.maximumPoolSize = maximumPoolSize;
+        }
+
+        public Long getKeepAliveTime() {
+            return keepAliveTime;
+        }
+
+        public void setKeepAliveTime(Long keepAliveTime) {
+            this.keepAliveTime = keepAliveTime;
+        }
+
+        public void setUnit(String unit) {
+            this.unit = unit;
+        }
+
+        public Integer getWorkQueueSize() {
+            return workQueueSize;
+        }
+
+        public void setWorkQueueSize(Integer workQueueSize) {
+            this.workQueueSize = workQueueSize;
+        }
+
+        public void setRejectedHandler(String rejectedHandler) {
+            this.rejectedHandler = rejectedHandler;
+        }
     }
 
     // 异步比对限流 相关配置项
-    @Data
     public static class AsyncCompareThrottling {
         // 异步比对限流是否开启。默认开启
         private Boolean isOpen = Boolean.TRUE;
@@ -109,6 +201,22 @@ public class JanusConfigProperties {
 
         public boolean isClosed() {
             return !this.isOpen;
+        }
+
+        public Boolean getOpen() {
+            return isOpen;
+        }
+
+        public void setOpen(Boolean open) {
+            isOpen = open;
+        }
+
+        public Double getLimitRatio() {
+            return limitRatio;
+        }
+
+        public void setLimitRatio(Double limitRatio) {
+            this.limitRatio = limitRatio;
         }
     }
 }

@@ -5,13 +5,13 @@ import io.github.kentasun.janus.core.compare.JanusCompare;
 import io.github.kentasun.janus.core.config.JanusConfigProperties;
 import io.github.kentasun.janus.core.constants.JanusConstants;
 import io.github.kentasun.janus.core.dto.*;
-import io.github.kentasun.janus.core.dto.*;
 import io.github.kentasun.janus.core.exception.JanusException;
 import io.github.kentasun.janus.core.utils.JanusLogUtils;
 import io.github.kentasun.janus.core.utils.JanusUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint;
 import org.springframework.aop.framework.ReflectiveMethodInvocation;
 import org.springframework.aop.interceptor.ExposeInvocationInterceptor;
@@ -27,8 +27,9 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Janus 框架核心功能生命周期。包含框架中的所有核心功能。
  */
-@Slf4j
 public class CoreLifecycle implements Lifecycle {
+
+    private static final Logger log = LoggerFactory.getLogger(CoreLifecycle.class);
 
     @Autowired
     private ApplicationContext applicationContext;

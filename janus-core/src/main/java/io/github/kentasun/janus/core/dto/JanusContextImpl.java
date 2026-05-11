@@ -7,9 +7,9 @@ import io.github.kentasun.janus.core.plugin.AbstractDataJanusPlugin;
 import io.github.kentasun.janus.core.plugin.JanusPlugin;
 import io.github.kentasun.janus.core.utils.JanusLogUtils;
 import io.github.kentasun.janus.core.utils.JanusUtils;
-import lombok.*;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -21,96 +21,99 @@ import java.util.concurrent.ExecutorService;
 /**
  * Janus 上下文
  */
-@Slf4j
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class JanusContextImpl implements JanusContext {
 
+    private static final Logger log = LoggerFactory.getLogger(JanusContextImpl.class);
+
     // 切点对象
-    @Getter
     private ProceedingJoinPoint joinPoint;
 
     // 切点方法
-    @Getter
     private Method method;
 
     // 生命周期实现
-    @Getter
     private Lifecycle lifecycle;
 
     // 用于异步比对两个分支的运行结果的线程池
     private ExecutorService janusCompareThreadPool;
 
     // 优先级小于0的插件
-    @Getter
     private List<JanusPlugin> higherPluginList;
 
     // 优先级大于0的插件
-    @Getter
     private List<JanusPlugin> lowerPluginList;
 
     // 比对功能实现
-    @Getter
     private JanusCompare janusCompare;
 
     // 唯一标识
-    @Getter
     private String methodId;
 
     // 业务数据键
-    @Getter
     private String businessKey;
 
     // 比对类型
-    @Getter
     private String compareType;
 
     // 是否比对，允许通过插件在运行时判断是否要比对
-    @Setter
     private Boolean needCompare;
 
     // 比对分支运行完后，比对2个分支的结果的过程是否异步执行。默认是异步执行
     private Boolean isAsyncCompare;
 
     // 主分支名，只允许设置1次，不能随意修改该属性
-    @Getter
     private String masterBranchName;
 
     // 加了 Janus 注解的分支
-    @Getter
     private BranchInfoImpl primaryBranch;
     // 次要分支
-    @Getter
     private BranchInfoImpl secondaryBranch;
 
     // 主分支
-    @Getter
-    @Setter
     private BranchInfoImpl masterBranch;
     // 用于比对的分支
-    @Getter
-    @Setter
     private BranchInfoImpl compareBranch;
 
     // 比对结果
-    @Getter
-    @Setter
     private CompareRes compareRes;
 
     // 自定义数据
-    @Getter
     private Map<Class<?>, Object> pluginDataMap;
 
     // 比对时忽略的字段路径列表
-    @Getter
     private Set<String> ignoreFieldPaths;
 
-    @Getter
     private Long primaryTime;
 
-    @Getter
     private Long secondaryTime;
+
+    public JanusContextImpl(final ProceedingJoinPoint joinPoint, final Method method, final Lifecycle lifecycle, final ExecutorService janusCompareThreadPool, final List<JanusPlugin> higherPluginList, final List<JanusPlugin> lowerPluginList, final JanusCompare janusCompare, final String methodId, final String businessKey, final String compareType, final Boolean needCompare, final Boolean isAsyncCompare, final String masterBranchName, final BranchInfoImpl primaryBranch, final BranchInfoImpl secondaryBranch, final BranchInfoImpl masterBranch, final BranchInfoImpl compareBranch, final CompareRes compareRes, final Map<Class<?>, Object> pluginDataMap, final Set<String> ignoreFieldPaths, final Long primaryTime, final Long secondaryTime) {
+        this.joinPoint = joinPoint;
+        this.method = method;
+        this.lifecycle = lifecycle;
+        this.janusCompareThreadPool = janusCompareThreadPool;
+        this.higherPluginList = higherPluginList;
+        this.lowerPluginList = lowerPluginList;
+        this.janusCompare = janusCompare;
+        this.methodId = methodId;
+        this.businessKey = businessKey;
+        this.compareType = compareType;
+        this.needCompare = needCompare;
+        this.isAsyncCompare = isAsyncCompare;
+        this.masterBranchName = masterBranchName;
+        this.primaryBranch = primaryBranch;
+        this.secondaryBranch = secondaryBranch;
+        this.masterBranch = masterBranch;
+        this.compareBranch = compareBranch;
+        this.compareRes = compareRes;
+        this.pluginDataMap = pluginDataMap;
+        this.ignoreFieldPaths = ignoreFieldPaths;
+        this.primaryTime = primaryTime;
+        this.secondaryTime = secondaryTime;
+    }
+
+    public JanusContextImpl() {
+    }
 
     @Override
     public Object[] getArgs() {
@@ -266,6 +269,289 @@ public class JanusContextImpl implements JanusContext {
             return (OTH) pluginDataObj;
         } else {
             return null;
+        }
+    }
+
+    @Override
+    public Long getSecondaryTime() {
+        return secondaryTime;
+    }
+
+    @Override
+    public Long getPrimaryTime() {
+        return primaryTime;
+    }
+
+    @Override
+    public Set<String> getIgnoreFieldPaths() {
+        return ignoreFieldPaths;
+    }
+
+    public Map<Class<?>, Object> getPluginDataMap() {
+        return pluginDataMap;
+    }
+
+    @Override
+    public CompareRes getCompareRes() {
+        return compareRes;
+    }
+
+    @Override
+    public BranchInfoImpl getCompareBranch() {
+        return compareBranch;
+    }
+
+    @Override
+    public BranchInfoImpl getMasterBranch() {
+        return masterBranch;
+    }
+
+    @Override
+    public BranchInfoImpl getSecondaryBranch() {
+        return secondaryBranch;
+    }
+
+    @Override
+    public BranchInfoImpl getPrimaryBranch() {
+        return primaryBranch;
+    }
+
+    @Override
+    public String getMasterBranchName() {
+        return masterBranchName;
+    }
+
+    @Override
+    public String getCompareType() {
+        return compareType;
+    }
+
+    @Override
+    public String getBusinessKey() {
+        return businessKey;
+    }
+
+    @Override
+    public String getMethodId() {
+        return methodId;
+    }
+
+    public JanusCompare getJanusCompare() {
+        return janusCompare;
+    }
+
+    public List<JanusPlugin> getLowerPluginList() {
+        return lowerPluginList;
+    }
+
+    public List<JanusPlugin> getHigherPluginList() {
+        return higherPluginList;
+    }
+
+    public Lifecycle getLifecycle() {
+        return lifecycle;
+    }
+
+    public Method getMethod() {
+        return method;
+    }
+
+    public ProceedingJoinPoint getJoinPoint() {
+        return joinPoint;
+    }
+
+    @Override
+    public void setNeedCompare(Boolean needCompare) {
+        this.needCompare = needCompare;
+    }
+
+    public void setMasterBranch(BranchInfoImpl masterBranch) {
+        this.masterBranch = masterBranch;
+    }
+
+    public void setCompareBranch(BranchInfoImpl compareBranch) {
+        this.compareBranch = compareBranch;
+    }
+
+    public void setCompareRes(CompareRes compareRes) {
+        this.compareRes = compareRes;
+    }
+
+    @Override
+    public String toString() {
+        return "JanusContextImpl{" +
+                "joinPoint=" + joinPoint +
+                ", method=" + method +
+                ", lifecycle=" + lifecycle +
+                ", janusCompareThreadPool=" + janusCompareThreadPool +
+                ", higherPluginList=" + higherPluginList +
+                ", lowerPluginList=" + lowerPluginList +
+                ", janusCompare=" + janusCompare +
+                ", methodId='" + methodId + '\'' +
+                ", businessKey='" + businessKey + '\'' +
+                ", compareType='" + compareType + '\'' +
+                ", needCompare=" + needCompare +
+                ", isAsyncCompare=" + isAsyncCompare +
+                ", masterBranchName='" + masterBranchName + '\'' +
+                ", primaryBranch=" + primaryBranch +
+                ", secondaryBranch=" + secondaryBranch +
+                ", masterBranch=" + masterBranch +
+                ", compareBranch=" + compareBranch +
+                ", compareRes=" + compareRes +
+                ", pluginDataMap=" + pluginDataMap +
+                ", ignoreFieldPaths=" + ignoreFieldPaths +
+                ", primaryTime=" + primaryTime +
+                ", secondaryTime=" + secondaryTime +
+                '}';
+    }
+
+    public static JanusContextImplBuilder builder() {
+        return new JanusContextImplBuilder();
+    }
+
+    public static class JanusContextImplBuilder {
+        private ProceedingJoinPoint joinPoint;
+        private Method method;
+        private Lifecycle lifecycle;
+        private ExecutorService janusCompareThreadPool;
+        private List<JanusPlugin> higherPluginList;
+        private List<JanusPlugin> lowerPluginList;
+        private JanusCompare janusCompare;
+        private String methodId;
+        private String businessKey;
+        private String compareType;
+        private Boolean needCompare;
+        private Boolean isAsyncCompare;
+        private String masterBranchName;
+        private BranchInfoImpl primaryBranch;
+        private BranchInfoImpl secondaryBranch;
+        private BranchInfoImpl masterBranch;
+        private BranchInfoImpl compareBranch;
+        private CompareRes compareRes;
+        private Map<Class<?>, Object> pluginDataMap;
+        private Set<String> ignoreFieldPaths;
+        private Long primaryTime;
+        private Long secondaryTime;
+
+        JanusContextImplBuilder() {
+        }
+
+        public JanusContextImplBuilder joinPoint(final ProceedingJoinPoint joinPoint) {
+            this.joinPoint = joinPoint;
+            return this;
+        }
+
+        public JanusContextImplBuilder method(final Method method) {
+            this.method = method;
+            return this;
+        }
+
+        public JanusContextImplBuilder lifecycle(final Lifecycle lifecycle) {
+            this.lifecycle = lifecycle;
+            return this;
+        }
+
+        public JanusContextImplBuilder janusCompareThreadPool(final ExecutorService janusCompareThreadPool) {
+            this.janusCompareThreadPool = janusCompareThreadPool;
+            return this;
+        }
+
+        public JanusContextImplBuilder higherPluginList(final List<JanusPlugin> higherPluginList) {
+            this.higherPluginList = higherPluginList;
+            return this;
+        }
+
+        public JanusContextImplBuilder lowerPluginList(final List<JanusPlugin> lowerPluginList) {
+            this.lowerPluginList = lowerPluginList;
+            return this;
+        }
+
+        public JanusContextImplBuilder janusCompare(final JanusCompare janusCompare) {
+            this.janusCompare = janusCompare;
+            return this;
+        }
+
+        public JanusContextImplBuilder methodId(final String methodId) {
+            this.methodId = methodId;
+            return this;
+        }
+
+        public JanusContextImplBuilder businessKey(final String businessKey) {
+            this.businessKey = businessKey;
+            return this;
+        }
+
+        public JanusContextImplBuilder compareType(final String compareType) {
+            this.compareType = compareType;
+            return this;
+        }
+
+        public JanusContextImplBuilder needCompare(final Boolean needCompare) {
+            this.needCompare = needCompare;
+            return this;
+        }
+
+        public JanusContextImplBuilder isAsyncCompare(final Boolean isAsyncCompare) {
+            this.isAsyncCompare = isAsyncCompare;
+            return this;
+        }
+
+        public JanusContextImplBuilder masterBranchName(final String masterBranchName) {
+            this.masterBranchName = masterBranchName;
+            return this;
+        }
+
+        public JanusContextImplBuilder primaryBranch(final BranchInfoImpl primaryBranch) {
+            this.primaryBranch = primaryBranch;
+            return this;
+        }
+
+        public JanusContextImplBuilder secondaryBranch(final BranchInfoImpl secondaryBranch) {
+            this.secondaryBranch = secondaryBranch;
+            return this;
+        }
+
+        public JanusContextImplBuilder masterBranch(final BranchInfoImpl masterBranch) {
+            this.masterBranch = masterBranch;
+            return this;
+        }
+
+        public JanusContextImplBuilder compareBranch(final BranchInfoImpl compareBranch) {
+            this.compareBranch = compareBranch;
+            return this;
+        }
+
+        public JanusContextImplBuilder compareRes(final CompareRes compareRes) {
+            this.compareRes = compareRes;
+            return this;
+        }
+
+        public JanusContextImplBuilder pluginDataMap(final Map<Class<?>, Object> pluginDataMap) {
+            this.pluginDataMap = pluginDataMap;
+            return this;
+        }
+
+        public JanusContextImplBuilder ignoreFieldPaths(final Set<String> ignoreFieldPaths) {
+            this.ignoreFieldPaths = ignoreFieldPaths;
+            return this;
+        }
+
+        public JanusContextImplBuilder primaryTime(final Long primaryTime) {
+            this.primaryTime = primaryTime;
+            return this;
+        }
+
+        public JanusContextImplBuilder secondaryTime(final Long secondaryTime) {
+            this.secondaryTime = secondaryTime;
+            return this;
+        }
+
+        public JanusContextImpl build() {
+            return new JanusContextImpl(this.joinPoint, this.method, this.lifecycle, this.janusCompareThreadPool, this.higherPluginList, this.lowerPluginList, this.janusCompare, this.methodId, this.businessKey, this.compareType, this.needCompare, this.isAsyncCompare, this.masterBranchName, this.primaryBranch, this.secondaryBranch, this.masterBranch, this.compareBranch, this.compareRes, this.pluginDataMap, this.ignoreFieldPaths, this.primaryTime, this.secondaryTime);
+        }
+
+        public String toString() {
+            return "JanusContextImpl.JanusContextImplBuilder(joinPoint=" + this.joinPoint + ", method=" + this.method + ", lifecycle=" + this.lifecycle + ", janusCompareThreadPool=" + this.janusCompareThreadPool + ", higherPluginList=" + this.higherPluginList + ", lowerPluginList=" + this.lowerPluginList + ", janusCompare=" + this.janusCompare + ", methodId=" + this.methodId + ", businessKey=" + this.businessKey + ", compareType=" + this.compareType + ", needCompare=" + this.needCompare + ", isAsyncCompare=" + this.isAsyncCompare + ", masterBranchName=" + this.masterBranchName + ", primaryBranch=" + this.primaryBranch + ", secondaryBranch=" + this.secondaryBranch + ", masterBranch=" + this.masterBranch + ", compareBranch=" + this.compareBranch + ", compareRes=" + this.compareRes + ", pluginDataMap=" + this.pluginDataMap + ", ignoreFieldPaths=" + this.ignoreFieldPaths + ", primaryTime=" + this.primaryTime + ", secondaryTime=" + this.secondaryTime + ")";
         }
     }
 }
