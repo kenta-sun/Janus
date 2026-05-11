@@ -3,8 +3,6 @@ package io.github.kentasun.janus.starter.plugins;
 import io.github.kentasun.janus.core.dto.JanusContext;
 import io.github.kentasun.janus.core.plugin.AbstractDataJanusPlugin;
 import io.github.kentasun.janus.starter.annotation.TestAnnotation;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,9 +14,15 @@ public class TestAnnotationJanusPlugin extends AbstractDataJanusPlugin<TestAnnot
         pluginData.setValue(annotation.value());
     }
 
-    @Setter
-    @Getter
     public static class TestAnnotationJanusPluginData {
         private String value;
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
     }
 }

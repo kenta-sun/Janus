@@ -49,8 +49,11 @@ public class JanusAspectStatus {
             return new JanusAspectStatus(this.masterBranchName);
         }
 
+        @Override
         public String toString() {
-            return "JanusAspectStatus.JanusAspectStatusBuilder(masterBranchName=" + this.masterBranchName + ")";
+            return "JanusAspectStatusBuilder{" +
+                    "masterBranchName='" + masterBranchName + '\'' +
+                    '}';
         }
     }
 }

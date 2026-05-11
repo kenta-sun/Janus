@@ -68,8 +68,11 @@ public class ExpressionRootObject {
             return new ExpressionRootObject(this.targetBean);
         }
 
+        @Override
         public String toString() {
-            return "ExpressionRootObject.ExpressionRootObjectBuilder(targetBean=" + this.targetBean + ")";
+            return "ExpressionRootObjectBuilder{" +
+                    "targetBean=" + targetBean +
+                    '}';
         }
     }
 }

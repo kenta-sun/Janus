@@ -45,8 +45,11 @@ public class TestRequest {
             return new TestRequest(this.key);
         }
 
+        @Override
         public String toString() {
-            return "TestRequest.TestRequestBuilder(key=" + this.key + ")";
+            return "TestRequestBuilder{" +
+                    "key='" + key + '\'' +
+                    '}';
         }
     }
 }

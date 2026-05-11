@@ -1,12 +1,14 @@
 package io.github.kentasun.janus.core.utils;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Janus 日志格式化工具类
  */
-@Slf4j
 public class JanusLogUtils {
+
+    private static final Logger log = LoggerFactory.getLogger(JanusLogUtils.class);
 
     public static final String SUCCESS_ICON = "✅";
     public static final String FAIL_ICON = "❌";

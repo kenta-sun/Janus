@@ -63,8 +63,12 @@ public class BranchRes {
             return new BranchRes(this.res, this.queryRes);
         }
 
+        @Override
         public String toString() {
-            return "BranchRes.BranchResBuilder(res=" + this.res + ", queryRes=" + this.queryRes + ")";
+            return "BranchResBuilder{" +
+                    "res=" + res +
+                    ", queryRes=" + queryRes +
+                    '}';
         }
     }
 }

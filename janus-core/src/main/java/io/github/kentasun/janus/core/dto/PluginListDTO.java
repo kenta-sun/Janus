@@ -68,8 +68,12 @@ public class PluginListDTO {
             return new PluginListDTO(this.higherPluginList, this.lowerPluginList);
         }
 
+        @Override
         public String toString() {
-            return "PluginListDTO.PluginListDTOBuilder(higherPluginList=" + this.higherPluginList + ", lowerPluginList=" + this.lowerPluginList + ")";
+            return "PluginListDTOBuilder{" +
+                    "higherPluginList=" + higherPluginList +
+                    ", lowerPluginList=" + lowerPluginList +
+                    '}';
         }
     }
 }

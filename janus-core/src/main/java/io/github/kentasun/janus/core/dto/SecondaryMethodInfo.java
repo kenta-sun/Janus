@@ -68,8 +68,12 @@ public class SecondaryMethodInfo {
             return new SecondaryMethodInfo(this.secondaryService, this.secondaryMethod);
         }
 
+        @Override
         public String toString() {
-            return "SecondaryMethodInfo.SecondaryMethodInfoBuilder(secondaryService=" + this.secondaryService + ", secondaryMethod=" + this.secondaryMethod + ")";
+            return "SecondaryMethodInfoBuilder{" +
+                    "secondaryService=" + secondaryService +
+                    ", secondaryMethod=" + secondaryMethod +
+                    '}';
         }
     }
 }

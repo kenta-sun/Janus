@@ -34,8 +34,12 @@ public class TestIgnoreDTO {
         this.str2 = str2;
     }
 
+    @Override
     public String toString() {
-        return "TestIgnoreDTO(str1=" + this.getStr1() + ", str2=" + this.getStr2() + ")";
+        return "TestIgnoreDTO{" +
+                "str1='" + str1 + '\'' +
+                ", str2='" + str2 + '\'' +
+                '}';
     }
 
     public static class TestIgnoreDTOBuilder {
@@ -59,8 +63,12 @@ public class TestIgnoreDTO {
             return new TestIgnoreDTO(this.str1, this.str2);
         }
 
+        @Override
         public String toString() {
-            return "TestIgnoreDTO.TestIgnoreDTOBuilder(str1=" + this.str1 + ", str2=" + this.str2 + ")";
+            return "TestIgnoreDTOBuilder{" +
+                    "str1='" + str1 + '\'' +
+                    ", str2='" + str2 + '\'' +
+                    '}';
         }
     }
 }

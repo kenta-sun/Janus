@@ -48,19 +48,19 @@ public class JanusConfigProperties {
         return !this.isOpen;
     }
 
-    public Boolean getMethodIdDuplicateCheck() {
+    public Boolean getIsMethodIdDuplicateCheck() {
         return isMethodIdDuplicateCheck;
     }
 
-    public void setMethodIdDuplicateCheck(Boolean methodIdDuplicateCheck) {
+    public void setIsMethodIdDuplicateCheck(Boolean methodIdDuplicateCheck) {
         isMethodIdDuplicateCheck = methodIdDuplicateCheck;
     }
 
-    public Boolean getOpen() {
+    public Boolean getIsOpen() {
         return isOpen;
     }
 
-    public void setOpen(Boolean open) {
+    public void setIsOpen(Boolean open) {
         isOpen = open;
     }
 
@@ -203,11 +203,11 @@ public class JanusConfigProperties {
             return !this.isOpen;
         }
 
-        public Boolean getOpen() {
+        public Boolean getIsOpen() {
             return isOpen;
         }
 
-        public void setOpen(Boolean open) {
+        public void setIsOpen(Boolean open) {
             isOpen = open;
         }
 

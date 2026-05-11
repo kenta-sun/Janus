@@ -2,13 +2,15 @@ package io.github.kentasun.janus.core.lifecycle;
 
 import io.github.kentasun.janus.core.dto.JanusContextImpl;
 import io.github.kentasun.janus.core.utils.JanusLogUtils;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 统计分支耗时，精确到纳秒
  */
-@Slf4j
 public class TimeLifecycle extends LifecycleDecorator {
+
+    private static final Logger log = LoggerFactory.getLogger(TimeLifecycle.class);
 
     @Override
     public void switchBranch(JanusContextImpl context) {

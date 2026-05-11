@@ -161,8 +161,16 @@ public class BranchInfoImpl implements BranchInfo {
             return new BranchInfoImpl(this.branchType, this.isExecuted, this.branchRes, this.exception, this.isRollback, this.isAsync);
         }
 
+        @Override
         public String toString() {
-            return "BranchInfoImpl.BranchInfoImplBuilder(branchType=" + this.branchType + ", isExecuted=" + this.isExecuted + ", branchRes=" + this.branchRes + ", exception=" + this.exception + ", isRollback=" + this.isRollback + ", isAsync=" + this.isAsync + ")";
+            return "BranchInfoImplBuilder{" +
+                    "branchType='" + branchType + '\'' +
+                    ", isExecuted=" + isExecuted +
+                    ", branchRes=" + branchRes +
+                    ", exception=" + exception +
+                    ", isRollback=" + isRollback +
+                    ", isAsync=" + isAsync +
+                    '}';
         }
     }
 }

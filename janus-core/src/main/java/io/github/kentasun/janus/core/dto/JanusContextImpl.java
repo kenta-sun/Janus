@@ -550,8 +550,32 @@ public class JanusContextImpl implements JanusContext {
             return new JanusContextImpl(this.joinPoint, this.method, this.lifecycle, this.janusCompareThreadPool, this.higherPluginList, this.lowerPluginList, this.janusCompare, this.methodId, this.businessKey, this.compareType, this.needCompare, this.isAsyncCompare, this.masterBranchName, this.primaryBranch, this.secondaryBranch, this.masterBranch, this.compareBranch, this.compareRes, this.pluginDataMap, this.ignoreFieldPaths, this.primaryTime, this.secondaryTime);
         }
 
+        @Override
         public String toString() {
-            return "JanusContextImpl.JanusContextImplBuilder(joinPoint=" + this.joinPoint + ", method=" + this.method + ", lifecycle=" + this.lifecycle + ", janusCompareThreadPool=" + this.janusCompareThreadPool + ", higherPluginList=" + this.higherPluginList + ", lowerPluginList=" + this.lowerPluginList + ", janusCompare=" + this.janusCompare + ", methodId=" + this.methodId + ", businessKey=" + this.businessKey + ", compareType=" + this.compareType + ", needCompare=" + this.needCompare + ", isAsyncCompare=" + this.isAsyncCompare + ", masterBranchName=" + this.masterBranchName + ", primaryBranch=" + this.primaryBranch + ", secondaryBranch=" + this.secondaryBranch + ", masterBranch=" + this.masterBranch + ", compareBranch=" + this.compareBranch + ", compareRes=" + this.compareRes + ", pluginDataMap=" + this.pluginDataMap + ", ignoreFieldPaths=" + this.ignoreFieldPaths + ", primaryTime=" + this.primaryTime + ", secondaryTime=" + this.secondaryTime + ")";
+            return "JanusContextImplBuilder{" +
+                    "joinPoint=" + joinPoint +
+                    ", method=" + method +
+                    ", lifecycle=" + lifecycle +
+                    ", janusCompareThreadPool=" + janusCompareThreadPool +
+                    ", higherPluginList=" + higherPluginList +
+                    ", lowerPluginList=" + lowerPluginList +
+                    ", janusCompare=" + janusCompare +
+                    ", methodId='" + methodId + '\'' +
+                    ", businessKey='" + businessKey + '\'' +
+                    ", compareType='" + compareType + '\'' +
+                    ", needCompare=" + needCompare +
+                    ", isAsyncCompare=" + isAsyncCompare +
+                    ", masterBranchName='" + masterBranchName + '\'' +
+                    ", primaryBranch=" + primaryBranch +
+                    ", secondaryBranch=" + secondaryBranch +
+                    ", masterBranch=" + masterBranch +
+                    ", compareBranch=" + compareBranch +
+                    ", compareRes=" + compareRes +
+                    ", pluginDataMap=" + pluginDataMap +
+                    ", ignoreFieldPaths=" + ignoreFieldPaths +
+                    ", primaryTime=" + primaryTime +
+                    ", secondaryTime=" + secondaryTime +
+                    '}';
         }
     }
 }
