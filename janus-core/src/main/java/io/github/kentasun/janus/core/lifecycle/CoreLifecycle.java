@@ -1,6 +1,7 @@
 package io.github.kentasun.janus.core.lifecycle;
 
 import io.github.kentasun.janus.core.annotation.Secondary;
+import io.github.kentasun.janus.core.cache.JanusSoftCache;
 import io.github.kentasun.janus.core.compare.JanusCompare;
 import io.github.kentasun.janus.core.config.JanusConfigProperties;
 import io.github.kentasun.janus.core.constants.JanusConstants;
@@ -37,7 +38,7 @@ public class CoreLifecycle implements Lifecycle {
     @Autowired
     private JanusConfigProperties janusConfigProperties;
 
-    private final Map<Class<?>, Object> secondaryBeanCache = new ConcurrentHashMap<>();
+    private final JanusSoftCache<Class<?>, Object> secondaryBeanCache = new JanusSoftCache<>();
     private final Map<Method, Method> secondaryMethodCache = new ConcurrentHashMap<>();
     private volatile Field methodInvocation = null; // volatile 防止代码重排序
 
@@ -238,16 +239,13 @@ public class CoreLifecycle implements Lifecycle {
         // 获取 Primary Service
         Object primaryService = joinPoint.getTarget();
         Class<?> primaryClass = AopUtils.getTargetClass(primaryService);
-        Method primaryMethod = null;
+        Method primaryMethod = this.getPrimaryMethod(joinPoint);
         // 从缓存中获取 secondaryService
-        Object secondaryService = secondaryBeanCache.get(primaryClass);
-        // 如果缓存中没有，则用反射获取 secondaryService
-        if (secondaryService == null) {
-
-            primaryMethod = this.getPrimaryMethod(joinPoint);
+        Object secondaryService = secondaryBeanCache.getOrPut(primaryClass, k -> {
+            /* 如果缓存中没有，则用反射获取 secondaryService */
             // 修正：遍历实现类所有的接口，找到定义了该方法的接口
             Class<?> interfaceType = null;
-            for (Class<?> iFace : primaryClass.getInterfaces()) {
+            for (Class<?> iFace : k.getInterfaces()) {
                 try {
                     iFace.getMethod(primaryMethod.getName(), primaryMethod.getParameterTypes());
                     interfaceType = iFace;
@@ -258,7 +256,7 @@ public class CoreLifecycle implements Lifecycle {
             }
             if (interfaceType == null) {
                 throw new JanusException(
-                        String.format("[%s]未实现含有[%s]方法的接口", primaryClass.getSimpleName(), primaryMethod.getName())
+                        String.format("[%s]未实现含有[%s]方法的接口", k.getName(), primaryMethod.getName())
                 );
             }
             Map<String, ?> beans = applicationContext.getBeansOfType(interfaceType);
@@ -266,23 +264,14 @@ public class CoreLifecycle implements Lifecycle {
                 Class<?> beanClass = AopUtils.getTargetClass(service);
                 // 找到带有 @Secondary 注解的 Service
                 if (beanClass.isAnnotationPresent(Secondary.class)) {
-                    secondaryService = service;
-                    // 将 secondaryService 放入缓存中
-                    secondaryBeanCache.put(primaryClass, service);
-                    break;
+                    return service;
                 }
             }
-        }
-
-        if (secondaryService == null) {
-            throw new JanusException(primaryClass.getSimpleName() + " 未找到 Secondary Service");
-        }
+            throw new JanusException(k.getName() + " 未找到 Secondary Service");
+        });
 
         /* 获取 目标方法 */
         Method secondaryMethod;
-        if (primaryMethod == null) {
-            primaryMethod = this.getPrimaryMethod(joinPoint);
-        }
         Method cached = secondaryMethodCache.get(primaryMethod);
         if (cached != null) {
             secondaryMethod = cached;
@@ -293,7 +282,7 @@ public class CoreLifecycle implements Lifecycle {
                 secondaryMethod = secondaryClass.getMethod(primaryMethod.getName(), primaryMethod.getParameterTypes());
             } catch (NoSuchMethodException e) {
                 throw new JanusException(
-                        String.format("[%s.%s]未找到", secondaryClass.getSimpleName(), primaryMethod.getName()),
+                        String.format("[%s.%s]未找到", secondaryClass.getName(), primaryMethod.getName()),
                         e
                 );
             }
