@@ -8,6 +8,7 @@ import io.github.kentasun.janus.core.dto.*;
 import io.github.kentasun.janus.core.exception.JanusException;
 import io.github.kentasun.janus.core.utils.JanusLogUtils;
 import io.github.kentasun.janus.core.utils.JanusUtils;
+import io.github.kentasun.janus.core.utils.MethodHandleCache;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
@@ -226,7 +227,7 @@ public class CoreLifecycle implements Lifecycle {
         Method secondaryMethod = secondaryServiceAndMethod.getSecondaryMethod();
 
         // 执行 Secondary 方法
-        return secondaryMethod.invoke(secondaryService, joinPoint.getArgs());
+        return MethodHandleCache.invokeMethod(secondaryService, secondaryMethod, joinPoint.getArgs());
     }
 
     /**
