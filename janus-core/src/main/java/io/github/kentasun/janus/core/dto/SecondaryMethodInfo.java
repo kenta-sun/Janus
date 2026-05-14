@@ -1,6 +1,6 @@
 package io.github.kentasun.janus.core.dto;
 
-import java.lang.reflect.Method;
+import java.lang.invoke.MethodHandle;
 
 /**
  * 分流比对框架 次要方法信息
@@ -9,9 +9,9 @@ public class SecondaryMethodInfo {
     // 目标对象
     private Object secondaryService;
     // 目标方法
-    private Method secondaryMethod;
+    private MethodHandle secondaryMethod;
 
-    public SecondaryMethodInfo(final Object secondaryService, final Method secondaryMethod) {
+    public SecondaryMethodInfo(final Object secondaryService, final MethodHandle secondaryMethod) {
         this.secondaryService = secondaryService;
         this.secondaryMethod = secondaryMethod;
     }
@@ -23,7 +23,7 @@ public class SecondaryMethodInfo {
         return this.secondaryService;
     }
 
-    public Method getSecondaryMethod() {
+    public MethodHandle getSecondaryMethod() {
         return this.secondaryMethod;
     }
 
@@ -31,7 +31,7 @@ public class SecondaryMethodInfo {
         this.secondaryService = secondaryService;
     }
 
-    public void setSecondaryMethod(final Method secondaryMethod) {
+    public void setSecondaryMethod(final MethodHandle secondaryMethod) {
         this.secondaryMethod = secondaryMethod;
     }
 
@@ -49,7 +49,7 @@ public class SecondaryMethodInfo {
 
     public static class SecondaryMethodInfoBuilder {
         private Object secondaryService;
-        private Method secondaryMethod;
+        private MethodHandle secondaryMethod;
 
         SecondaryMethodInfoBuilder() {
         }
@@ -59,7 +59,7 @@ public class SecondaryMethodInfo {
             return this;
         }
 
-        public SecondaryMethodInfoBuilder secondaryMethod(final Method secondaryMethod) {
+        public SecondaryMethodInfoBuilder secondaryMethod(final MethodHandle secondaryMethod) {
             this.secondaryMethod = secondaryMethod;
             return this;
         }

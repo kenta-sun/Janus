@@ -9,7 +9,7 @@ import io.github.kentasun.janus.core.dto.*;
 import io.github.kentasun.janus.core.exception.JanusException;
 import io.github.kentasun.janus.core.utils.JanusLogUtils;
 import io.github.kentasun.janus.core.utils.JanusUtils;
-import io.github.kentasun.janus.core.utils.MethodHandleCache;
+import io.github.kentasun.janus.core.utils.ReflectUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
@@ -21,10 +21,11 @@ import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Janus 框架核心功能生命周期。包含框架中的所有核心功能。
@@ -39,7 +40,7 @@ public class CoreLifecycle implements Lifecycle {
     private JanusConfigProperties janusConfigProperties;
 
     private final JanusSoftCache<Class<?>, Object> secondaryBeanCache = new JanusSoftCache<>();
-    private final Map<Method, Method> secondaryMethodCache = new ConcurrentHashMap<>();
+    private final JanusSoftCache<Method, MethodHandle> secondaryMethodCache = new JanusSoftCache<>();
     private volatile Field methodInvocation = null; // volatile 防止代码重排序
 
     /**
@@ -222,13 +223,13 @@ public class CoreLifecycle implements Lifecycle {
     /**
      * 执行次要分支
      */
-    private Object invokeSecondaryMethod(ProceedingJoinPoint joinPoint) throws Throwable {
+    private Object invokeSecondaryMethod(ProceedingJoinPoint joinPoint) {
         SecondaryMethodInfo secondaryServiceAndMethod = this.getSecondaryServiceAndMethod(joinPoint);
         Object secondaryService = secondaryServiceAndMethod.getSecondaryService();
-        Method secondaryMethod = secondaryServiceAndMethod.getSecondaryMethod();
+        MethodHandle secondaryMethod = secondaryServiceAndMethod.getSecondaryMethod();
 
         // 执行 Secondary 方法
-        return MethodHandleCache.invokeMethod(secondaryService, secondaryMethod, joinPoint.getArgs());
+        return ReflectUtils.invokeMethodHandle(secondaryService, secondaryMethod, joinPoint.getArgs());
     }
 
     /**
@@ -271,23 +272,27 @@ public class CoreLifecycle implements Lifecycle {
         });
 
         /* 获取 目标方法 */
-        Method secondaryMethod;
-        Method cached = secondaryMethodCache.get(primaryMethod);
-        if (cached != null) {
-            secondaryMethod = cached;
-        } else {
+        MethodHandle secondaryMethod = secondaryMethodCache.getOrPut(primaryMethod, k -> {
+            /* 如果缓存中没有，则用反射获取 secondaryMethod */
             Class<?> secondaryClass = AopUtils.getTargetClass(secondaryService);
             // 获取同名同参数的方法
             try {
-                secondaryMethod = secondaryClass.getMethod(primaryMethod.getName(), primaryMethod.getParameterTypes());
+                // 获取原本方法
+                Method method = secondaryClass.getMethod(primaryMethod.getName(), primaryMethod.getParameterTypes());
+                // 包装成句柄返回
+                return MethodHandles.lookup().unreflect(method);
             } catch (NoSuchMethodException e) {
                 throw new JanusException(
                         String.format("[%s.%s]未找到", secondaryClass.getName(), primaryMethod.getName()),
                         e
                 );
+            } catch (IllegalAccessException e) {
+                throw new JanusException(
+                        String.format("无权访问[%s.%s]方法", secondaryClass.getName(), primaryMethod.getName()),
+                        e
+                );
             }
-            secondaryMethodCache.put(primaryMethod, secondaryMethod);
-        }
+        });
 
         return SecondaryMethodInfo.builder()
                 .secondaryService(secondaryService)
