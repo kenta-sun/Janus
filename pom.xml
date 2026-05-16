@@ -143,6 +143,15 @@
                             </goals>
                         </execution>
                     </executions>
+                    <configuration>
+                        <additionalDependencies>
+                            <additionalDependency>
+                                <groupId>org.springframework</groupId>
+                                <artifactId>spring-tx</artifactId>
+                                <version>5.3.31</version>
+                            </additionalDependency>
+                        </additionalDependencies>
+                    </configuration>
                 </plugin>
                 <!-- gpg签名插件 -->
                 <plugin>
